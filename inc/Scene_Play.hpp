@@ -1,6 +1,8 @@
 #ifndef SCENE__PLAY_HPP
 #define SCENE__PLAY_HPP
 
+#define DEBUG_ENABLE false
+
 #include "Scene.hpp"
 
 #include "Box2D/Box2D.h"
@@ -36,16 +38,17 @@ private:
 
     sf::View view;
 
+    //Play vars
     b2World world;
-
     std::vector<Entity*> entities;
+    
 
-    //Duck* duck;
-    //b2Body* duckBody;
-
-    int x, y;
-
+    //Functions
     sf::Vector2f cellToPixels(sf::Vector2u cell) const;
+    void loadLevel();
+
+    //ImGui vars
+    int x, y;
 };
 
 #endif
