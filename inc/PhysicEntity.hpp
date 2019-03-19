@@ -15,13 +15,13 @@ public:
 
     PhysicEntity();
     PhysicEntity(Scene_Play* play, const sf::Vector2f& position);
-    PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect);
+    PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture);
     ~PhysicEntity();
     
     void setPosition(const sf::Vector2f& position);
     void setRotation(float angle);
 
-    virtual void update() override;
+    virtual void update(const sf::Time deltatime) override;
 
     virtual void onReduceDurability();
     virtual void onDestroy(); 

@@ -1,7 +1,7 @@
 #ifndef SCENE__PLAY_HPP
 #define SCENE__PLAY_HPP
 
-#define DEBUG_ENABLE false
+#define DEBUG_ENABLE true
 
 #include "Scene.hpp"
 

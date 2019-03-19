@@ -2,7 +2,7 @@
 #include "Scene_Play.hpp"
 
 #include "PhysicEntity.hpp"
-#include "Fixed.hpp"
+#include "GenericEntity.hpp"
 
 Scene_Play::Scene_Play(Core core)
 : Scene(core)
@@ -77,20 +77,20 @@ void Scene_Play::update(const sf::Time deltatime)
 
     for(int i = 0; i < entities.size(); i++)
     {
-        entities[i]->update();
+        entities[i]->update(deltatime);
     }
 
     if(DEBUG_ENABLE)
     {
         ImGui::Begin("DEBUG");
         ImGui::PushItemWidth(70.f);
-        ImGui::InputInt("X", &x, 1, 100);
-        ImGui::InputInt("Y", &y, 1, 100);
+        ImGui::InputInt("X", &x, 0, 100);
+        ImGui::InputInt("Y", &y, 0, 100);
         if(ImGui::Button("CREATE"))
         {
             if(x >= 0 and x < NUMCELLS.x and y >= 0 and y < NUMCELLS.y)
             {
-                entities.push_back(new Fixed(core, this, cellToPixels(sf::Vector2u(x, y))));
+                entities.push_back(new GenericEntity(core, this, cellToPixels(sf::Vector2u(x, y)), "Abox", std::make_pair(4, sf::seconds(0.1f))));
                 PhysicEntity* pe = dynamic_cast<PhysicEntity*>(entities.back());
                 if(pe != nullptr)
                 {
@@ -132,7 +132,7 @@ void Scene_Play::loadLevel()
     {
         for(int j = 0; j < NUMCELLS.y; j++)
         {
-            if(map[j][i] == 1) entities.push_back(new Fixed(core, this, cellToPixels(sf::Vector2u(i, j))));
+            if(map[j][i] == 1) entities.push_back(new GenericEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "box"));
         }
     }
 

@@ -15,7 +15,7 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Ent
     durability = 1;
 }
 
-PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : Entity(play, position, texture, rect)
+PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture) : Entity(play, position, texture)
 {
     physics = false;
     physicized = false;
@@ -63,7 +63,7 @@ void PhysicEntity::setRotation(float angle)
     Entity::setRotation(angle);
 }
 
-void PhysicEntity::update()
+void PhysicEntity::update(const sf::Time deltatime)
 {
     if(physicized)
     {
@@ -71,7 +71,7 @@ void PhysicEntity::update()
         if(not body->IsFixedRotation()) Entity::setRotation(anglize(body->GetAngle()));
     }
 
-    Entity::update();
+    Entity::update(deltatime);
 }
 
 void PhysicEntity::onReduceDurability() {}
