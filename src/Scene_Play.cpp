@@ -7,13 +7,15 @@
 Scene_Play::Scene_Play(Core core)
 : Scene(core)
 , world(b2Vec2(0.f, 60.f))
-{}
+{
+    ID = 0;
+}
 
 Scene_Play::~Scene_Play()
 {
-    for(int i = 0; i < entities.size(); i++)
+    for(EntityHolder::iterator it = entities.begin(); it != entities.end(); it++)
     {
-        delete entities[i];
+        delete it->second;
     }
 }
 
@@ -41,27 +43,41 @@ void Scene_Play::handleEvents(const sf::Event& event)
                     break;
                 case sf::Keyboard::Up:
                 {
-                    view.move(sf::Vector2f(0.f, -10.f));
+                    view.move(sf::Vector2f(0.f, -32.f));
                 }
                     break;
                 case sf::Keyboard::Down:
                 {
-                    view.move(sf::Vector2f(0.f, 10.f));
+                    view.move(sf::Vector2f(0.f, 32.f));
                 }
                     break;
                 case sf::Keyboard::Left:
                 {
-                    view.move(sf::Vector2f(-10.f, 0.f));
+                    view.move(sf::Vector2f(-32.f, 0.f));
                 }
                     break;
                 case sf::Keyboard::Right:
                 {
-                    view.move(sf::Vector2f(10.f, 0.f));
+                    view.move(sf::Vector2f(32.f, 0.f));
                 }
                     break;
                 default:
                     break;
             }
+        }
+            break;
+        case sf::Event::MouseButtonPressed:
+        {
+            if(event.mouseButton.button == sf::Mouse::Left)
+            {
+                EntityHolder::iterator it = addEntity(new GenericEntity(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "expl"));
+
+                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
+                if(pe != nullptr)
+                {
+                    pe->physicize(world);
+                }
+            } 
         }
             break;
         default:
@@ -75,11 +91,13 @@ void Scene_Play::update(const sf::Time deltatime)
 
     world.Step(deltatime.asSeconds(), 4, 4);
 
-    for(int i = 0; i < entities.size(); i++)
+    for(EntityHolder::iterator it = entities.begin(); it != entities.end(); it++)
     {
-        entities[i]->update(deltatime);
+        it->second->update(deltatime);
     }
 
+
+    // --- IMGUI --- //
     if(DEBUG_ENABLE)
     {
         ImGui::Begin("DEBUG");
@@ -90,8 +108,9 @@ void Scene_Play::update(const sf::Time deltatime)
         {
             if(x >= 0 and x < NUMCELLS.x and y >= 0 and y < NUMCELLS.y)
             {
-                entities.push_back(new GenericEntity(core, this, cellToPixels(sf::Vector2u(x, y)), "Abox", std::make_pair(4, sf::seconds(0.1f))));
-                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(entities.back());
+                EntityHolder::iterator it = addEntity(new GenericEntity(core, this, cellToPixels(sf::Vector2u(x, y)), "expl"));
+
+                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
                 if(pe != nullptr)
                 {
                     pe->physicize(world);
@@ -104,9 +123,9 @@ void Scene_Play::update(const sf::Time deltatime)
 
 void Scene_Play::draw(sf::RenderWindow& window) const
 {
-    for(int i = 0; i < entities.size(); i++)
+    for(EntityHolder::const_iterator it = entities.begin(); it != entities.end(); it++)
     {
-        window.draw(*entities[i]);
+        window.draw(*it->second);
     }
 }
 
@@ -132,16 +151,28 @@ void Scene_Play::loadLevel()
     {
         for(int j = 0; j < NUMCELLS.y; j++)
         {
-            if(map[j][i] == 1) entities.push_back(new GenericEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "box"));
-        }
-    }
+            if(map[j][i] == 1)
+            {
+                EntityHolder::iterator it = addEntity(new GenericEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "floor"));
 
-    for(int i = 0; i < entities.size(); i++)
-    {
-        PhysicEntity* pe = dynamic_cast<PhysicEntity*>(entities[i]);
-        if(pe != nullptr)
-        {
-            pe->physicize(world);
+                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
+                if(pe != nullptr)
+                {
+                    pe->physicize(world);
+                }
+            }
         }
     }
+}
+
+unsigned int Scene_Play::getNextID()
+{
+    ID++;
+    return ID;
+}
+
+EntityHolder::iterator Scene_Play::addEntity(Entity* entity)
+{
+    std::pair<EntityHolder::iterator, bool> it = entities.insert(std::make_pair(entity->getID(), entity));
+    return it.first;
 }

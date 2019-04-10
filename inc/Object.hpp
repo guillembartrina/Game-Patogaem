@@ -10,7 +10,7 @@ class Object : public PhysicEntity
 
     Object();
     Object(Scene_Play* play, const sf::Vector2f& position);
-    Object(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture);
+    Object(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect);
     ~Object();
 
     virtual void onCollision();

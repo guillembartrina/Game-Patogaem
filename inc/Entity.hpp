@@ -16,7 +16,7 @@ public:
 
     Entity();
     Entity(Scene_Play* play, const sf::Vector2f& position);
-    Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture);
+    Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect);
     ~Entity();
 
     void animate(unsigned int numFrames, const sf::Time& frameTime);
@@ -33,10 +33,13 @@ public:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     bool operator==(const Entity& e) const;
+    bool operator<(const Entity& e) const;
+
+    unsigned int getID() const;
     
 protected:
 
-    void setSprite(const sf::Texture& texture);
+    void setSprite(const sf::Texture& texture, const sf::IntRect& rect);
 
     bool haveSprite;
     sf::Sprite sprite;

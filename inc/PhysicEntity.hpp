@@ -15,7 +15,7 @@ public:
 
     PhysicEntity();
     PhysicEntity(Scene_Play* play, const sf::Vector2f& position);
-    PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture);
+    PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect);
     ~PhysicEntity();
     
     void setPosition(const sf::Vector2f& position);

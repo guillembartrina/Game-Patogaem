@@ -5,6 +5,7 @@
 
 Entity::Entity()
 {
+    ID = 0;
     haveSprite = false;
     haveAnimation = false;
     setPosition(ZEROVECTOR_F);
@@ -12,16 +13,19 @@ Entity::Entity()
 
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position) : play(play)
 {
+    ID = play->getNextID();
     haveSprite = false;
     haveAnimation = false;
     setPosition(position);
 }
 
-Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture) : play(play)
+Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : play(play)
 {
+    ID = play->getNextID();
     haveSprite = true;
     haveAnimation = false;
     sprite.setTexture(texture);
+    sprite.setTextureRect(rect);
     int textureSize = texture.getSize().y;
     sprite.setOrigin(sf::Vector2f(textureSize, textureSize) * 0.5f);
     setPosition(position);
@@ -39,8 +43,8 @@ void Entity::animate(unsigned int numFrames, const sf::Time& frameTime)
         currentFrame = 0;
         currentTime = sf::Time::Zero;
 
-        int frameSize = sprite.getTexture()->getSize().y;
-        sprite.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(frameSize, frameSize)));
+        sf::IntRect rect = sprite.getTextureRect();
+        sprite.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(rect.width, rect.height)));
 
         haveAnimation = true;
         playing = true;
@@ -94,8 +98,8 @@ void Entity::update(const sf::Time deltatime)
             currentFrame++;
             currentFrame %= numFrames;
 
-            int frameSize = sprite.getTexture()->getSize().y;
-            sprite.setTextureRect(sf::IntRect(sf::Vector2i(currentFrame * frameSize, 0), sf::Vector2i(frameSize, frameSize)));
+            sf::IntRect rect = sprite.getTextureRect();
+            sprite.setTextureRect(sf::IntRect(sf::Vector2i(currentFrame * rect.width, 0), sf::Vector2i(rect.width, rect.height)));
 
             currentTime -= frameTime;
         }
@@ -109,13 +113,24 @@ void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 bool Entity::operator==(const Entity& e) const
 {
-    return (e.ID == ID);
+    return (ID == e.ID);
 }
 
-void Entity::setSprite(const sf::Texture& texture)
+bool Entity::operator<(const Entity& e) const
+{
+    return (ID < e.ID);
+}
+
+unsigned int Entity::getID() const
+{
+    return ID;
+}
+
+void Entity::setSprite(const sf::Texture& texture, const sf::IntRect& rect)
 {
     haveSprite = true;
     sprite.setTexture(texture);
+    sprite.setTextureRect(rect);
     int textureSize = texture.getSize().y;
     sprite.setOrigin(sf::Vector2f(textureSize, textureSize) * 0.5f);
     setPosition(getPosition());

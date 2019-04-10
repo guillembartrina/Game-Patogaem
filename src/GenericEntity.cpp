@@ -1,15 +1,15 @@
 
 #include "GenericEntity.hpp"
 
-GenericEntity::GenericEntity(Core core, Scene_Play* play, const sf::Vector2f& position, std::string name, std::pair<unsigned int, sf::Time> animationParams) : PhysicEntity(play, position)
+GenericEntity::GenericEntity(Core core, Scene_Play* play, const sf::Vector2f& position, std::string name) : Entity(play, position)
 {
-    setSprite(core.resources->Texture(name));
-    setPhysics(b2BodyType::b2_staticBody, createRectangle(b2Vec2(64.f, 64.f)), 0.2f, 1.f, 0.f);
-    fixtureDef.filter = getFilter(CollisionCategory::STATIC_FOREGROUND);
+    setSprite(core.resources->Texture(name), sf::IntRect(ZEROVECTOR_I, sf::Vector2i(CELLSIZE)));
 
-    if(animationParams.first != 0)
+    sf::Vector2u rect = core.resources->Texture(name).getSize();
+
+    if(rect.x > int(CELLSIZE.x))
     {
-        animate(animationParams.first, animationParams.second);
+        animate(rect.x / int(CELLSIZE.x), sf::seconds(0.1f));
     }
 }
 

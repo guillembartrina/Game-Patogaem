@@ -2,13 +2,18 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
+#include <iostream>
+
 #include "SFML/System/Vector2.hpp"
 
 #include "Box2D/Collision/b2Collision.h"
 
-static const sf::Vector2f ZEROVECTOR_F = sf::Vector2f(0.f, 0.f);
+#define printInfo(str) std::cerr << "INFO: " << str << std::endl; 
 
-static const sf::Vector2f CELLSIZE = sf::Vector2f(64, 64);
+static const sf::Vector2f ZEROVECTOR_F = sf::Vector2f(0.f, 0.f);
+static const sf::Vector2i ZEROVECTOR_I = sf::Vector2i(0, 0);
+
+static const sf::Vector2f CELLSIZE = sf::Vector2f(64.f, 64.f);
 static const sf::Vector2u NUMCELLS = sf::Vector2u(40, 20);
 
 enum CollisionCategory
@@ -21,7 +26,7 @@ enum CollisionCategory
     NO_COLLISION = 0b1 << 5
 };
 
-static b2Filter getFilter(CollisionCategory cc)
+static b2Filter getCollisionFilter(CollisionCategory cc)
 {
     b2Filter filter;
     filter.categoryBits = cc;

@@ -12,8 +12,11 @@
 #include "imguiSFML.h"
 
 #include "Entity.hpp"
+#include <set>
 
 class Entity;
+
+typedef std::map<unsigned int, Entity*> EntityHolder;
 
 class Scene_Play : public Scene
 {
@@ -34,18 +37,23 @@ public:
 
     void resume();
 
+    unsigned int getNextID();
+
 private:
 
     sf::View view;
 
     //Play vars
     b2World world;
-    std::vector<Entity*> entities;
-    
+
+    unsigned int ID;
+    EntityHolder entities;
 
     //Functions
     sf::Vector2f cellToPixels(sf::Vector2u cell) const;
     void loadLevel();
+
+    EntityHolder::iterator addEntity(Entity* entity);
 
     //ImGui vars
     int x, y;
