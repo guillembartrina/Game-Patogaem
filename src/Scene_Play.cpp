@@ -3,12 +3,16 @@
 
 #include "PhysicEntity.hpp"
 #include "GenericEntity.hpp"
+#include "GenericPhysicEntity.hpp"
+#include "TestPE.hpp"
 
 Scene_Play::Scene_Play(Core core)
 : Scene(core)
 , world(b2Vec2(0.f, 60.f))
 {
     ID = 0;
+    world.SetContactListener(&collisionHandler);
+    x = y = 0;
 }
 
 Scene_Play::~Scene_Play()
@@ -70,7 +74,7 @@ void Scene_Play::handleEvents(const sf::Event& event)
         {
             if(event.mouseButton.button == sf::Mouse::Left)
             {
-                EntityHolder::iterator it = addEntity(new GenericEntity(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "expl"));
+                EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "box", b2BodyType::b2_dynamicBody, CollisionCategory::DYNAMIC_FOREGROUND));
 
                 PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
                 if(pe != nullptr)
@@ -153,7 +157,7 @@ void Scene_Play::loadLevel()
         {
             if(map[j][i] == 1)
             {
-                EntityHolder::iterator it = addEntity(new GenericEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "floor"));
+                EntityHolder::iterator it = addEntity(new GenericPhysicEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "floor"));
 
                 PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
                 if(pe != nullptr)

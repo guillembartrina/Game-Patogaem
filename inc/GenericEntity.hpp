@@ -1,8 +1,8 @@
 
-#ifndef GENERICENTITY_HPP
-#define GENERICENTITY_HPP
+#ifndef GENERIC__ENTITY_HPP
+#define GENERIC__ENTITY_HPP
 
-#include "PhysicEntity.hpp"
+#include "Entity.hpp"
 
 class GenericEntity : public Entity
 {

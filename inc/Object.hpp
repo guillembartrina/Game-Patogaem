@@ -13,12 +13,13 @@ class Object : public PhysicEntity
     Object(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect);
     ~Object();
 
-    virtual void onCollision();
-    virtual void onDuckCollision();
+    virtual void onReduceDurability();
 
     protected:
 
     private:
+
+    unsigned int durability;
 
 };
 

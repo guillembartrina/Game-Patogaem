@@ -5,21 +5,18 @@ PhysicEntity::PhysicEntity() : Entity()
 {
     physics = false;
     physicized = false;
-    durability = 1;
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Entity(play, position)
 {
     physics = false;
     physicized = false;
-    durability = 1;
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : Entity(play, position, texture, rect)
 {
     physics = false;
     physicized = false;
-    durability = 1;
 }
 
 PhysicEntity::~PhysicEntity()
@@ -34,7 +31,9 @@ b2Body* PhysicEntity::physicize(b2World& world)
         bodyDef.position.Set(metrize(getPosition().x), metrize(getPosition().y));
         body = world.CreateBody(&bodyDef);
         fixtureDef.shape = shape;
+        fixtureDef.filter = getCollisionFilter(category);
         body->CreateFixture(&fixtureDef);
+        body->SetUserData(this);
         physicized = true;
 
         return body;
@@ -74,13 +73,13 @@ void PhysicEntity::update(const sf::Time deltatime)
     Entity::update(deltatime);
 }
 
-void PhysicEntity::onReduceDurability() {}
-void PhysicEntity::onDestroy() {}
+void PhysicEntity::onCollision(PhysicEntity* collided) {}
 
-void PhysicEntity::setPhysics(b2BodyType type, b2Shape* shapePtr, float friction, float density, float restitution)
+void PhysicEntity::setPhysics(b2BodyType type, b2Shape* shape, CollisionCategory category, float friction, float density, float restitution)
 {
     bodyDef.type = type;
-    shape = shapePtr;
+    this->shape = shape;
+    this->category = category;
     fixtureDef.friction = friction;
     fixtureDef.density = density;
     fixtureDef.restitution = restitution;

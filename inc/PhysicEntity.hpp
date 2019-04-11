@@ -9,6 +9,48 @@
 #include "Box2DUtils.hpp"
 #include "Entity.hpp"
 
+#include "Utils.hpp"
+
+enum CollisionCategory
+{
+    DUCK = 0b1 << 0,
+    STATIC_FOREGROUND = 0b1 << 1,
+    DYNAMIC_FOREGROUND = 0b1 << 2,
+    STATIC_BACKGROUND = 0b1 << 3,
+    DYNAMIC_BACKGROUND = 0b1 << 4,
+    NO_COLLISION = 0b1 << 5
+};
+
+static b2Filter getCollisionFilter(CollisionCategory cc)
+{
+    b2Filter filter;
+    filter.categoryBits = cc;
+
+    switch(cc)
+    {
+        case DUCK:
+        filter.maskBits = STATIC_FOREGROUND | DYNAMIC_FOREGROUND;
+            break;
+        case STATIC_FOREGROUND:
+        filter.maskBits = DUCK | STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | DYNAMIC_BACKGROUND;
+            break;
+        case DYNAMIC_FOREGROUND:
+        filter.maskBits = DUCK | STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND;
+            break;
+        case STATIC_BACKGROUND:
+        filter.maskBits = STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | DYNAMIC_BACKGROUND;
+            break;
+        case DYNAMIC_BACKGROUND:
+        filter.maskBits = STATIC_FOREGROUND | STATIC_BACKGROUND;
+            break;
+        case NO_COLLISION:
+        filter.maskBits = 0x0000;
+            break;
+    }
+
+    return filter;
+}
+
 class PhysicEntity : public Entity
 {
 public:
@@ -23,26 +65,24 @@ public:
 
     virtual void update(const sf::Time deltatime) override;
 
-    virtual void onReduceDurability();
-    virtual void onDestroy(); 
-
     b2Body* physicize(b2World& world);
+
+    virtual void onCollision(PhysicEntity* collided);
 
 protected:
 
-    void setPhysics(b2BodyType type, b2Shape* shape, float friction, float density, float restitution);
+    void setPhysics(b2BodyType type, b2Shape* shape, CollisionCategory category, float friction, float density, float restitution);
 
-    bool physics; //set as true when physics defined
+    bool physics; //must set as true when physics are defined
     b2BodyDef bodyDef;
     b2Shape* shape;
+    CollisionCategory category;
     b2FixtureDef fixtureDef;
 
 private:
 
     bool physicized;
     b2Body* body;
-
-    int durability;
 };
 
 #endif

@@ -3,6 +3,8 @@
 
 #define DEBUG_ENABLE true
 
+#include <set>
+
 #include "Scene.hpp"
 
 #include "Box2D/Box2D.h"
@@ -12,7 +14,7 @@
 #include "imguiSFML.h"
 
 #include "Entity.hpp"
-#include <set>
+#include "CollisionHandler.hpp"
 
 class Entity;
 
@@ -45,6 +47,7 @@ private:
 
     //Play vars
     b2World world;
+    CollisionHandler collisionHandler;
 
     unsigned int ID;
     EntityHolder entities;
