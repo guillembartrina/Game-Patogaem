@@ -128,10 +128,9 @@ unsigned int Entity::getID() const
 
 void Entity::setSprite(const sf::Texture& texture, const sf::IntRect& rect)
 {
-    haveSprite = true;
     sprite.setTexture(texture);
     sprite.setTextureRect(rect);
-    int textureSize = texture.getSize().y;
-    sprite.setOrigin(sf::Vector2f(textureSize, textureSize) * 0.5f);
+    sprite.setOrigin(sf::Vector2f(rect.width, rect.height) * 0.5f);
     setPosition(getPosition());
+    haveSprite = true;
 }

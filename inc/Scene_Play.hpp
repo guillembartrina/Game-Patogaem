@@ -3,7 +3,7 @@
 
 #define DEBUG_ENABLE true
 
-#include <set>
+#include <queue>
 
 #include "Scene.hpp"
 
@@ -15,6 +15,7 @@
 
 #include "Entity.hpp"
 #include "CollisionHandler.hpp"
+#include "Level.hpp"
 
 class Entity;
 
@@ -41,6 +42,9 @@ public:
 
     unsigned int getNextID();
 
+    EntityHolder::iterator addEntity(Entity* entity);
+    void deleteEntity(unsigned int id);
+
 private:
 
     sf::View view;
@@ -49,17 +53,27 @@ private:
     b2World world;
     CollisionHandler collisionHandler;
 
+    sf::RectangleShape background;
+
+    Entity* duck;
+
     unsigned int ID;
     EntityHolder entities;
 
+    std::queue<unsigned int> toDelete;
+
     //Functions
     sf::Vector2f cellToPixels(sf::Vector2u cell) const;
-    void loadLevel();
-
-    EntityHolder::iterator addEntity(Entity* entity);
+    void loadLevel(Level* level);
 
     //ImGui vars
     int x, y;
+    int m;
+
+
+    //Test
+
+    Level level;
 };
 
 #endif

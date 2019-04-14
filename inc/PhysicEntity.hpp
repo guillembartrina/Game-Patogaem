@@ -68,6 +68,7 @@ public:
     b2Body* physicize(b2World& world);
 
     virtual void onCollision(PhysicEntity* collided);
+    virtual void onReduceDurability();
 
 protected:
 
@@ -79,10 +80,13 @@ protected:
     CollisionCategory category;
     b2FixtureDef fixtureDef;
 
+    b2Body* body;
+
 private:
 
     bool physicized;
-    b2Body* body;
+    
+    unsigned int durability;
 };
 
 #endif

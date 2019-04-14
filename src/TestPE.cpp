@@ -5,12 +5,12 @@ TestPE::TestPE(Core core, Scene_Play* play, const sf::Vector2f& position, std::s
 {
     setSprite(core.resources->Texture(name), sf::IntRect(ZEROVECTOR_I, sf::Vector2i(CELLSIZE)));
 
-    setPhysics(type, createRectangle(tob2Vec2(size)), category, 0.f, 1.f, 0.f);
+    setPhysics(type, createRectangle(tob2Vec2(size)), category, 0.2f, 0.f, 0.f);
 }
 
 TestPE::~TestPE() {}
 
 void TestPE::onCollision(PhysicEntity* collided)
 {
-    printInfo("COLLIDED: " << getID() << " - " << collided->getID());
+    //printInfo("COLLIDED: " << getID() << " - " << collided->getID());
 }

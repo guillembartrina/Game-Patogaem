@@ -5,18 +5,21 @@ PhysicEntity::PhysicEntity() : Entity()
 {
     physics = false;
     physicized = false;
+    durability = 0;
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Entity(play, position)
 {
     physics = false;
     physicized = false;
+    durability = 0;
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : Entity(play, position, texture, rect)
 {
     physics = false;
     physicized = false;
+    durability = 0;
 }
 
 PhysicEntity::~PhysicEntity()
@@ -74,6 +77,8 @@ void PhysicEntity::update(const sf::Time deltatime)
 }
 
 void PhysicEntity::onCollision(PhysicEntity* collided) {}
+
+void PhysicEntity::onReduceDurability() {}
 
 void PhysicEntity::setPhysics(b2BodyType type, b2Shape* shape, CollisionCategory category, float friction, float density, float restitution)
 {

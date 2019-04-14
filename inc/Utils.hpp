@@ -8,6 +8,8 @@
 
 #include "Box2D/Collision/b2Collision.h"
 
+#include "Level.hpp"
+
 #define printInfo(str) std::cerr << "INFO: " << str << std::endl; 
 
 static const sf::Vector2f ZEROVECTOR_F = sf::Vector2f(0.f, 0.f);
@@ -16,7 +18,7 @@ static const sf::Vector2i ZEROVECTOR_I = sf::Vector2i(0, 0);
 static const sf::Vector2f CELLSIZE = sf::Vector2f(64.f, 64.f);
 static const sf::Vector2u NUMCELLS = sf::Vector2u(40, 20);
 
-static const int map[20][40] = 
+static unsigned int map[20][40] = 
 {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
