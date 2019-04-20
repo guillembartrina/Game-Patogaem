@@ -70,6 +70,7 @@ private:
     int x, y;
     int m;
 
+    void imgui();
 
     //Test
 

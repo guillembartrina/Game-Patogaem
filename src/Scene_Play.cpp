@@ -9,7 +9,7 @@
 
 Scene_Play::Scene_Play(Core core)
 : Scene(core)
-, world(b2Vec2(0.f, 60.f))
+, world(b2Vec2(0.f, 9.8f))
 {
     ID = 0;
     world.SetContactListener(&collisionHandler);
@@ -17,7 +17,7 @@ Scene_Play::Scene_Play(Core core)
     background.setPosition(0, 0);
     background.setSize(sf::Vector2f(core.window->getSize()));
 
-    duck = new Duck(core, this, sf::Vector2f(300, 700));
+    duck = new Duck(world, core, this, sf::Vector2f(300, 700));
     static_cast<Duck*>(duck)->physicize(world);
 
     //TEST
@@ -110,14 +110,14 @@ void Scene_Play::update(const sf::Time deltatime)
     core.window->setView(view);
     background.setPosition(view.getCenter() - view.getSize() / 2.f);
 
-    world.Step(deltatime.asSeconds(), 4, 4);
-
     duck->update(deltatime);
 
     for(EntityHolder::iterator it = entities.begin(); it != entities.end(); it++)
     {
         it->second->update(deltatime);
     }
+
+    world.Step(deltatime.asSeconds() * 2.f, 8, 8);
 
     while(not toDelete.empty())
     {
@@ -126,34 +126,7 @@ void Scene_Play::update(const sf::Time deltatime)
     }
 
     //IMGUI
-    if(DEBUG_ENABLE)
-    {
-        ImGui::Begin("DEBUG");
-        ImGui::PushItemWidth(70.f);
-        ImGui::InputInt("X", &x, 0, 100);
-        ImGui::InputInt("Y", &y, 0, 100);
-        if(ImGui::Button("CREATE"))
-        {
-            if(x >= 0 and x < NUMCELLS.x and y >= 0 and y < NUMCELLS.y)
-            {
-                EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(x, y)), "expl", b2BodyType::b2_dynamicBody, CollisionCategory(m)));
-
-                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
-                if(pe != nullptr)
-                {
-                    pe->physicize(world);
-                }
-            }
-        }
-        ImGui::BeginChild("CollCat", ImVec2(240, 140), true);
-        ImGui::Text("CollisionCategory");
-        ImGui::RadioButton("S_F", &m, CollisionCategory::STATIC_FOREGROUND);
-        ImGui::RadioButton("S_B", &m, CollisionCategory::STATIC_BACKGROUND);
-        ImGui::RadioButton("D_F", &m, CollisionCategory::DYNAMIC_FOREGROUND);
-        ImGui::RadioButton("D_B", &m, CollisionCategory::DYNAMIC_BACKGROUND);
-        ImGui::EndChild();
-        ImGui::End();
-    }
+    imgui();
 }
 
 void Scene_Play::draw(sf::RenderWindow& window) const
@@ -221,4 +194,36 @@ EntityHolder::iterator Scene_Play::addEntity(Entity* entity)
 void Scene_Play::deleteEntity(unsigned int id)
 {
     toDelete.push(id);
+}
+
+void Scene_Play::imgui()
+{
+    if(DEBUG_ENABLE)
+    {
+        ImGui::Begin("DEBUG");
+        ImGui::PushItemWidth(70.f);
+        ImGui::InputInt("X", &x, 0, 100);
+        ImGui::InputInt("Y", &y, 0, 100);
+        if(ImGui::Button("CREATE"))
+        {
+            if(x >= 0 and x < NUMCELLS.x and y >= 0 and y < NUMCELLS.y)
+            {
+                EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(x, y)), "expl", b2BodyType::b2_dynamicBody, CollisionCategory(m)));
+
+                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
+                if(pe != nullptr)
+                {
+                    pe->physicize(world);
+                }
+            }
+        }
+        ImGui::BeginChild("CollCat", ImVec2(240, 140), true);
+        ImGui::Text("CollisionCategory");
+        ImGui::RadioButton("S_F", &m, CollisionCategory::STATIC_FOREGROUND);
+        ImGui::RadioButton("S_B", &m, CollisionCategory::STATIC_BACKGROUND);
+        ImGui::RadioButton("D_F", &m, CollisionCategory::DYNAMIC_FOREGROUND);
+        ImGui::RadioButton("D_B", &m, CollisionCategory::DYNAMIC_BACKGROUND);
+        ImGui::EndChild();
+        ImGui::End();
+    }
 }

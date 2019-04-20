@@ -17,7 +17,7 @@ inline static b2Vec2 tob2Vec2(sf::Vector2f from)
     return b2Vec2(from.x, from.y);
 }
 
-const static float conversion = 30.f;
+const static float conversion = 64.f;
 
 inline static float pixelize(float value)
 {
@@ -65,10 +65,10 @@ static void move(b2Body* from, sf::Transformable& to)
     to.setRotation(anglize(from->GetAngle()));
 }
 
-static b2PolygonShape* createRectangle(b2Vec2 size)
+static b2PolygonShape* createRectangle(b2Vec2 size, b2Vec2 offset = b2Vec2_zero, float angle = 0.f)
 {
     b2PolygonShape* rectangle = new b2PolygonShape();
-    rectangle->SetAsBox(metrize(size.x/2), metrize(size.y/2));
+    rectangle->SetAsBox(metrize(size.x/2), metrize(size.y/2), metrize(offset), angle); //Because of it's from the center
 
     return rectangle;
 }

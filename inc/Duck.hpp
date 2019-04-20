@@ -5,13 +5,13 @@
 
 enum MovementSide
 {
-  MV_RIGHT = 1,
+  MV_RIGHT = 0,
   MV_LEFT
 };
 
 enum MovementState
 {
-  IDLE = 1,
+  IDLE = 0,
   WALK,
   JUMP,
   FLY,
@@ -23,17 +23,23 @@ class Duck : public PhysicEntity
 {
     public:
 
-    Duck(Core core, Scene_Play* play, const sf::Vector2f& position);
+    Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& position);
     ~Duck();
 
     void update(sf::Time deltatime) override;
 
     void handleEvents(const sf::Event& event);
 
+    void onCollision(PhysicEntity* collided) override;
+
     private:
+
+    std::vector<sf::IntRect> rects;
 
     MovementState state;
     MovementSide side;
+
+    bool grounded;
 };
 
 #endif

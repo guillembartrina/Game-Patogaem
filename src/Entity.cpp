@@ -56,6 +56,11 @@ void Entity::setAnimationFrame(unsigned int frameNum)
     if(haveAnimation and frameNum < numFrames)
     {
         currentFrame = frameNum;
+
+        sf::IntRect rect = sprite.getTextureRect();
+        sprite.setTextureRect(sf::IntRect(sf::Vector2i(currentFrame * rect.width, 0), sf::Vector2i(rect.width, rect.height)));
+
+        currentTime = sf::Time::Zero;
     }
 }
 

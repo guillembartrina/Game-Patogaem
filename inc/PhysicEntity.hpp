@@ -18,7 +18,8 @@ enum CollisionCategory
     DYNAMIC_FOREGROUND = 0b1 << 2,
     STATIC_BACKGROUND = 0b1 << 3,
     DYNAMIC_BACKGROUND = 0b1 << 4,
-    NO_COLLISION = 0b1 << 5
+    NO_COLLISION = 0b1 << 5,
+    ALL_COLLISION = 0b1 << 6
 };
 
 static b2Filter getCollisionFilter(CollisionCategory cc)
@@ -46,6 +47,8 @@ static b2Filter getCollisionFilter(CollisionCategory cc)
         case NO_COLLISION:
         filter.maskBits = 0x0000;
             break;
+        case ALL_COLLISION:
+        filter.maskBits = 0xFFFF;
     }
 
     return filter;
@@ -76,8 +79,6 @@ protected:
 
     bool physics; //must set as true when physics are defined
     b2BodyDef bodyDef;
-    b2Shape* shape;
-    CollisionCategory category;
     b2FixtureDef fixtureDef;
 
     b2Body* body;

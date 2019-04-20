@@ -24,18 +24,30 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const
 
 PhysicEntity::~PhysicEntity()
 {
-    delete shape;
+    if(physicized)
+    {
+        body->GetWorld()->DestroyBody(body);
+    }
+
+    if(physics)
+    {
+        delete fixtureDef.shape;
+    }
 }
 
 b2Body* PhysicEntity::physicize(b2World& world)
 {
     if(physics)
     {
-        bodyDef.position.Set(metrize(getPosition().x), metrize(getPosition().y));
+        printInfo("P1");
         body = world.CreateBody(&bodyDef);
-        fixtureDef.shape = shape;
-        fixtureDef.filter = getCollisionFilter(category);
         body->CreateFixture(&fixtureDef);
+        printInfo("P2");
+
+        fixtureDef.filter = getCollisionFilter(CollisionCategory::ALL_COLLISION);
+        fixtureDef.isSensor = true;
+        body->CreateFixture(&fixtureDef);
+
         body->SetUserData(this);
         physicized = true;
 
@@ -82,9 +94,10 @@ void PhysicEntity::onReduceDurability() {}
 
 void PhysicEntity::setPhysics(b2BodyType type, b2Shape* shape, CollisionCategory category, float friction, float density, float restitution)
 {
+    bodyDef.position.Set(metrize(getPosition().x), metrize(getPosition().y));
     bodyDef.type = type;
-    this->shape = shape;
-    this->category = category;
+    fixtureDef.shape = shape;
+    fixtureDef.filter = getCollisionFilter(category);
     fixtureDef.friction = friction;
     fixtureDef.density = density;
     fixtureDef.restitution = restitution;
