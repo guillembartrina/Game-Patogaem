@@ -6,6 +6,7 @@ PhysicEntity::PhysicEntity() : Entity()
     physics = false;
     physicized = false;
     durability = 0;
+    bodyDef.type = b2BodyType::b2_staticBody;
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Entity(play, position)
@@ -13,6 +14,7 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Ent
     physics = false;
     physicized = false;
     durability = 0;
+    bodyDef.type = b2BodyType::b2_staticBody;
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : Entity(play, position, texture, rect)
@@ -20,6 +22,7 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const
     physics = false;
     physicized = false;
     durability = 0;
+    bodyDef.type = b2BodyType::b2_staticBody;
 }
 
 PhysicEntity::~PhysicEntity()
@@ -31,7 +34,10 @@ PhysicEntity::~PhysicEntity()
 
     if(physics)
     {
-        delete fixtureDef.shape;
+        for(int i = 0; i < fixtureDef.size(); i++)
+        {
+            delete fixtureDef[i].shape;
+        }
     }
 }
 
@@ -39,14 +45,20 @@ b2Body* PhysicEntity::physicize(b2World& world)
 {
     if(physics)
     {
-        printInfo("P1");
+        bodyDef.position = metrize(tob2Vec2(getPosition()));
         body = world.CreateBody(&bodyDef);
-        body->CreateFixture(&fixtureDef);
-        printInfo("P2");
 
-        fixtureDef.filter = getCollisionFilter(CollisionCategory::ALL_COLLISION);
-        fixtureDef.isSensor = true;
-        body->CreateFixture(&fixtureDef);
+        for(int i = 0; i < fixtureDef.size(); i++)
+        {
+            body->CreateFixture(&fixtureDef[i]);
+        }
+
+        if(fixtureDef.size() == 1) //If only one fixture-> simple entity, needs a collision sensor
+        {
+            fixtureDef[0].filter = getCollisionFilter(CollisionCategory::ALL_COLLISION);
+            fixtureDef[0].isSensor = true;
+            body->CreateFixture(&fixtureDef[0]);
+        }
 
         body->SetUserData(this);
         physicized = true;
@@ -90,16 +102,49 @@ void PhysicEntity::update(const sf::Time deltatime)
 
 void PhysicEntity::onCollision(PhysicEntity* collided) {}
 
-void PhysicEntity::onReduceDurability() {}
+//void PhysicEntity::onReduceDurability() {}
 
-void PhysicEntity::setPhysics(b2BodyType type, b2Shape* shape, CollisionCategory category, float friction, float density, float restitution)
+sf::RectangleShape PhysicEntity::getHB(unsigned int num) const
 {
-    bodyDef.position.Set(metrize(getPosition().x), metrize(getPosition().y));
+    sf::RectangleShape hb = sf::RectangleShape();
+
+    hb.setFillColor(sf::Color::Transparent);
+    hb.setOutlineColor(sf::Color::Magenta);
+    hb.setOutlineThickness(-2.f);
+
+    if(physicized)
+    {
+        b2Fixture* f = body->GetFixtureList();
+        while(num > 0) { f = f->GetNext(); num--; }
+
+        sf::Vector2f hs = toVector2f(pixelize(f->GetAABB(0).GetExtents()));
+        
+        hb.setSize(hs * 2.f);
+        hb.setOrigin(hs);
+        hb.setPosition(toVector2f(pixelize(f->GetAABB(0).GetCenter())));
+    }
+
+    return hb;
+}
+
+void PhysicEntity::setBody(b2BodyType type, bool rotation)
+{
     bodyDef.type = type;
-    fixtureDef.shape = shape;
-    fixtureDef.filter = getCollisionFilter(category);
-    fixtureDef.friction = friction;
-    fixtureDef.density = density;
-    fixtureDef.restitution = restitution;
+    bodyDef.fixedRotation = rotation;
+}
+
+void PhysicEntity::addFixture(b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor)
+{
+    fixtureDef.push_back(b2FixtureDef());
+
+    b2FixtureDef& current = fixtureDef.back();
+
+    current.shape = shape;
+    current.friction = friction;
+    current.restitution = restitution;
+    current.density = density;
+    current.filter = getCollisionFilter(category);
+    current.isSensor = sensor;
+
     physics = true;
 }

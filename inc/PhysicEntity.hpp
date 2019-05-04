@@ -71,21 +71,24 @@ public:
     b2Body* physicize(b2World& world);
 
     virtual void onCollision(PhysicEntity* collided);
-    virtual void onReduceDurability();
+    //virtual void onReduceDurability();
+
+    sf::RectangleShape getHB(unsigned int num = 0) const;
 
 protected:
 
-    void setPhysics(b2BodyType type, b2Shape* shape, CollisionCategory category, float friction, float density, float restitution);
-
-    bool physics; //must set as true when physics are defined
-    b2BodyDef bodyDef;
-    b2FixtureDef fixtureDef;
-
     b2Body* body;
+
+    void setBody(b2BodyType type, bool rotation = false);
+    void addFixture(b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor = false);
 
 private:
 
     bool physicized;
+
+    bool physics;
+    b2BodyDef bodyDef;
+    std::vector<b2FixtureDef> fixtureDef;
     
     unsigned int durability;
 };

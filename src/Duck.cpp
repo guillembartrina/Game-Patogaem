@@ -13,10 +13,14 @@ Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& posi
 
     setSprite(core.resources->Texture("duck"), rects[state*2+side]);
 
-    setPhysics(b2BodyType::b2_dynamicBody, createRectangle(b2Vec2(62, 126)), CollisionCategory::DUCK, 0.2f, 1.f, 0.f);
-    bodyDef.fixedRotation = true;
+    setBody(b2BodyType::b2_dynamicBody, true);
 
-    //physicize(world);
+    addFixture(createRectangle(b2Vec2(62, 20), b2Vec2(0, 53)), CollisionCategory::DUCK, 0.f, 0.f, 0.f, true);
+    addFixture(createRectangle(b2Vec2(62, 20), b2Vec2(0, -53)), CollisionCategory::DUCK, 0.f, 0.f, 0.f, true);
+
+    addFixture(createRectangle(b2Vec2(62, 126)), CollisionCategory::DUCK, 0.2f, 0.f, 1.f);
+
+    physicize(world);
 
     //isSensor and all collisionas already activated
     /*

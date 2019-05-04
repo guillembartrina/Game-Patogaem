@@ -18,7 +18,7 @@ Scene_Play::Scene_Play(Core core)
     background.setSize(sf::Vector2f(core.window->getSize()));
 
     duck = new Duck(world, core, this, sf::Vector2f(300, 700));
-    static_cast<Duck*>(duck)->physicize(world);
+    //static_cast<Duck*>(duck)->physicize(world);
 
     //TEST
     level.name = "testlevel";
@@ -135,9 +135,17 @@ void Scene_Play::draw(sf::RenderWindow& window) const
 
     window.draw(*duck);
 
+    if(DEBUG_HB_ENABLE)
+    {
+        window.draw(static_cast<Duck*>(duck)->getHB(0));
+        window.draw(static_cast<Duck*>(duck)->getHB(1));
+        window.draw(static_cast<Duck*>(duck)->getHB(2));
+    }
+
     for(EntityHolder::const_iterator it = entities.begin(); it != entities.end(); it++)
     {
         window.draw(*it->second);
+        if(DEBUG_HB_ENABLE) window.draw(static_cast<PhysicEntity*>(it->second)->getHB(0));
     }
 }
 
@@ -198,7 +206,7 @@ void Scene_Play::deleteEntity(unsigned int id)
 
 void Scene_Play::imgui()
 {
-    if(DEBUG_ENABLE)
+    if(DEBUG_MENU_ENABLE)
     {
         ImGui::Begin("DEBUG");
         ImGui::PushItemWidth(70.f);

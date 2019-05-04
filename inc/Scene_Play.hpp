@@ -1,7 +1,8 @@
 #ifndef SCENE__PLAY_HPP
 #define SCENE__PLAY_HPP
 
-#define DEBUG_ENABLE true
+#define DEBUG_MENU_ENABLE true
+#define DEBUG_HB_ENABLE false
 
 #include <queue>
 

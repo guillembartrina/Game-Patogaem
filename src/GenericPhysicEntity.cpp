@@ -12,7 +12,9 @@ GenericPhysicEntity::GenericPhysicEntity(Core core, Scene_Play* play, const sf::
         animate(rect.x / int(CELLSIZE.x), sf::seconds(0.1f));
     }
 
-    setPhysics(b2BodyType::b2_staticBody, createRectangle(tob2Vec2(CELLSIZE)), CollisionCategory::STATIC_FOREGROUND, 0.2f, 0.f, 0.f);
+    setBody(b2BodyType::b2_staticBody);
+    addFixture(createRectangle(tob2Vec2(CELLSIZE)), CollisionCategory::STATIC_FOREGROUND, 0.2f, 0.f, 1.f);
+
 }
 
 GenericPhysicEntity::~GenericPhysicEntity() {}
