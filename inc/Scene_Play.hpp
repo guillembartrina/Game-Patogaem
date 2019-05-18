@@ -2,7 +2,6 @@
 #define SCENE__PLAY_HPP
 
 #define DEBUG_MENU_ENABLE true
-#define DEBUG_HB_ENABLE false
 
 #include <queue>
 
@@ -68,6 +67,10 @@ private:
     void loadLevel(Level* level);
 
     //ImGui vars
+
+    bool duckHBs;
+    bool sceneHBs;
+
     int x, y;
     int m;
 

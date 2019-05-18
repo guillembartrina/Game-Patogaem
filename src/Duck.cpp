@@ -6,10 +6,11 @@ Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& posi
     state = MovementState::IDLE;
     side = MovementSide::MV_RIGHT;
 
+    grounded = true;
+    force = ZEROVECTOR_F;
+
     rects.push_back(sf::IntRect(ZEROVECTOR_I, sf::Vector2i(64, 128)));
     rects.push_back(sf::IntRect(sf::Vector2i(64, 0), sf::Vector2i(64, 128)));
-
-    grounded = true;
 
     setSprite(core.resources->Texture("duck"), rects[state*2+side]);
 
@@ -38,6 +39,7 @@ Duck::~Duck() {}
 
 void Duck::update(const sf::Time deltatime)
 {
+    body->ApplyForceToCenter(tob2Vec2(force), true);
     PhysicEntity::update(deltatime);
 }
 
@@ -51,7 +53,11 @@ void Duck::handleEvents(const sf::Event& event)
             {
                 case sf::Keyboard::Up:
                 {
-                    if(grounded) body->ApplyLinearImpulse(b2Vec2(0, -24), body->GetPosition(), true);
+                    if(grounded) 
+                    {
+                        body->ApplyLinearImpulse(b2Vec2(0, -30), body->GetPosition(), true);
+                        //grounded = false;
+                    }
                 }
                     break;
                 case sf::Keyboard::Down:
@@ -63,6 +69,7 @@ void Duck::handleEvents(const sf::Event& event)
                 {
                     if(state != MovementState::FLOOR)
                     {
+                        force.x -= 40;
                         side = MovementSide::MV_LEFT;
                     }
                 }
@@ -71,6 +78,7 @@ void Duck::handleEvents(const sf::Event& event)
                 {
                     if(state != MovementState::FLOOR)
                     {
+                        force.x += 40;
                         side = MovementSide::MV_RIGHT;
                     }
                 }
@@ -94,10 +102,12 @@ void Duck::handleEvents(const sf::Event& event)
                     break;
                 case sf::Keyboard::Left:
                 {
+                    force.x += 40;
                 }
                     break;
                 case sf::Keyboard::Right:
                 {
+                    force.x -= 40;
                 }
                     break;
                 default:

@@ -5,11 +5,12 @@
 #include "GenericEntity.hpp"
 #include "GenericPhysicEntity.hpp"
 #include "TestPE.hpp"
+#include "Block.hpp"
 #include "Duck.hpp"
 
 Scene_Play::Scene_Play(Core core)
 : Scene(core)
-, world(b2Vec2(0.f, 9.8f))
+, world(b2Vec2(0.f, 40.f))
 {
     ID = 0;
     world.SetContactListener(&collisionHandler);
@@ -25,12 +26,16 @@ Scene_Play::Scene_Play(Core core)
     level.background = "background1";
 
     //IMGUI
+    duckHBs = false;
+    sceneHBs = false;
     x = y = 0;
     m = 1;
 }
 
 Scene_Play::~Scene_Play()
 {
+    delete duck;
+
     for(EntityHolder::iterator it = entities.begin(); it != entities.end(); it++)
     {
         delete it->second;
@@ -79,6 +84,17 @@ void Scene_Play::handleEvents(const sf::Event& event)
                     view.move(sf::Vector2f(32.f, 0.f));
                 }
                     break;
+                case sf::Keyboard::C:
+                {
+                    EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));
+
+                    PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
+                    if(pe != nullptr)
+                    {
+                        pe->physicize(world);
+                    }
+                }
+                    break;
                 default:
                     break;
             }
@@ -86,16 +102,6 @@ void Scene_Play::handleEvents(const sf::Event& event)
             break;
         case sf::Event::MouseButtonPressed:
         {
-            if(event.mouseButton.button == sf::Mouse::Left)
-            {
-                EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));
-
-                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
-                if(pe != nullptr)
-                {
-                    pe->physicize(world);
-                }
-            } 
         }
             break;
         default:
@@ -117,7 +123,7 @@ void Scene_Play::update(const sf::Time deltatime)
         it->second->update(deltatime);
     }
 
-    world.Step(deltatime.asSeconds() * 2.f, 8, 8);
+    world.Step(deltatime.asSeconds(), 2, 2);
 
     while(not toDelete.empty())
     {
@@ -135,7 +141,7 @@ void Scene_Play::draw(sf::RenderWindow& window) const
 
     window.draw(*duck);
 
-    if(DEBUG_HB_ENABLE)
+    if(duckHBs)
     {
         window.draw(static_cast<Duck*>(duck)->getHB(0));
         window.draw(static_cast<Duck*>(duck)->getHB(1));
@@ -145,7 +151,10 @@ void Scene_Play::draw(sf::RenderWindow& window) const
     for(EntityHolder::const_iterator it = entities.begin(); it != entities.end(); it++)
     {
         window.draw(*it->second);
-        if(DEBUG_HB_ENABLE) window.draw(static_cast<PhysicEntity*>(it->second)->getHB(0));
+        if(sceneHBs)
+        {
+            for(int i = 0; i < 4; i++) window.draw(static_cast<PhysicEntity*>(it->second)->getHB(i));
+        }
     }
 }
 
@@ -167,15 +176,23 @@ void Scene_Play::loadLevel(Level* level)
 {
     entities.clear();
 
+    sf::Vector2u sides[4] = { sf::Vector2u(0, -1), sf::Vector2u(1, 0), sf::Vector2u(0, 1), sf::Vector2u(-1, 0) };
+
     background.setTexture(&core.resources->Texture(level->background));
 
     for(int i = 0; i < NUMCELLS.x; i++)
     {
         for(int j = 0; j < NUMCELLS.y; j++)
         {
-            if(map[j][i] == 1)
+            if(map[j][i] > 0 and map[j][i] <= 200)
             {
-                EntityHolder::iterator it = addEntity(new GenericPhysicEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "ts_castle_w_c"));
+                //EntityHolder::iterator it = addEntity(new GenericPhysicEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "ts_castle_w_c"));
+                char sides = 0x0F;
+                if(i-1 >= 0 and map[j][i-1] > 0 and map[j][i-1] <= 200) sides = sides & 0x0E;
+                if(i+1 < NUMCELLS.x and map[j][i+1] > 0 and map[j][i+1] <= 200) sides = sides & 0x0B;
+                if(j-1 >= 0 and map[j-1][i] > 0 and map[j-1][i] <= 200) sides = sides & 0x07;
+                if(i+1 < NUMCELLS.y and map[j+1][i] > 0 and map[j+1][i] <= 200) sides = sides & 0x0D;
+                EntityHolder::iterator it = addEntity(new Block(core, this, cellToPixels(sf::Vector2u(i, j)), sides));
 
                 PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
                 if(pe != nullptr)
@@ -209,6 +226,14 @@ void Scene_Play::imgui()
     if(DEBUG_MENU_ENABLE)
     {
         ImGui::Begin("DEBUG");
+
+        if(ImGui::CollapsingHeader("HBs"))
+        {
+            ImGui::Checkbox("Duck HBs", &duckHBs);
+            ImGui::Checkbox("Scene HBs", &sceneHBs);
+        }
+
+        /*
         ImGui::PushItemWidth(70.f);
         ImGui::InputInt("X", &x, 0, 100);
         ImGui::InputInt("Y", &y, 0, 100);
@@ -232,6 +257,8 @@ void Scene_Play::imgui()
         ImGui::RadioButton("D_F", &m, CollisionCategory::DYNAMIC_FOREGROUND);
         ImGui::RadioButton("D_B", &m, CollisionCategory::DYNAMIC_BACKGROUND);
         ImGui::EndChild();
+        */
         ImGui::End();
+        //ImGui::ShowDemoWindow();
     }
 }

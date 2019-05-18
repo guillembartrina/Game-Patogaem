@@ -73,6 +73,14 @@ static b2PolygonShape* createRectangle(b2Vec2 size, b2Vec2 offset = b2Vec2_zero,
     return rectangle;
 }
 
+static b2EdgeShape createEdge(b2Vec2 v1, b2Vec2 v2)
+{
+    b2EdgeShape edge;
+    edge.Set(metrize(v1), metrize(v2));
+
+    return edge;
+}
+
 static b2Body* createBody(b2World& world, b2Vec2 position, b2BodyType type, b2Shape* shape, float density, float friction, float restitution)
 {
     b2Body* body;

@@ -40,6 +40,7 @@ class Duck : public PhysicEntity
     MovementSide side;
 
     bool grounded;
+    sf::Vector2f force;
 };
 
 #endif

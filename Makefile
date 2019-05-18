@@ -11,7 +11,7 @@ F_SRC = $(wildcard $(D_SRC)/*.cpp)
 F_OBJ_M = $(patsubst $(D_SRC_M)/%.cpp,$(D_OBJ)/%.o,$(F_SRC_M))
 F_OBJ = $(patsubst $(D_SRC)/%.cpp,$(D_OBJ)/%.o,$(F_SRC))
 
-CXX_FLAGS = -std=c++11
+CXX_FLAGS = -std=c++11 -O2
 
 D_SFML_INC = sfml/include
 SFML_FLAGS = -Lsfml/lib -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio
@@ -42,6 +42,10 @@ $(D_OBJ)/%.o: $(D_SRC)/%.cpp $(D_INC)/%.hpp
 $(D_OBJ)/%.o: $(D_IMGUI)/%.cpp
 	g++ -c $< -o $@ -I$(D_INC_M) -I$(D_INC) -I$(D_IMGUI) -I$(D_SFML_INC) -I$(D_BOX2D_INC) $(CXX_FLAGS) $(GL_FLAGS)
 
-clean:
+cleanall:
 	rm obj/*.o
+	rm bin/*.exe
+
+clean:
+	rm $(F_OBJ)
 	rm bin/*.exe

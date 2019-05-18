@@ -18,6 +18,15 @@ static const sf::Vector2i ZEROVECTOR_I = sf::Vector2i(0, 0);
 static const sf::Vector2f CELLSIZE = sf::Vector2f(64.f, 64.f);
 static const sf::Vector2u NUMCELLS = sf::Vector2u(40, 20);
 
+/*
+NUM CODES:
+- 0 > empty
+- 1-200 SF
+- 201-400 DF
+- 401-600 SB
+- 601-1000 DB
+*/
+
 static unsigned int map[20][40] = 
 {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},

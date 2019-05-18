@@ -115,7 +115,9 @@ sf::RectangleShape PhysicEntity::getHB(unsigned int num) const
     if(physicized)
     {
         b2Fixture* f = body->GetFixtureList();
-        while(num > 0) { f = f->GetNext(); num--; }
+        while(num > 0 and f != nullptr) { f = f->GetNext(); num--; }
+
+        if(f == nullptr) return hb;
 
         sf::Vector2f hs = toVector2f(pixelize(f->GetAABB(0).GetExtents()));
         
