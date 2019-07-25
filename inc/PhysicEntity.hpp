@@ -70,8 +70,10 @@ public:
 
     b2Body* physicize(b2World& world);
 
-    virtual void onCollision(PhysicEntity* collided);
+    virtual void onCollision(int fixtureid, PhysicEntity* collided);
     //virtual void onReduceDurability();
+
+    //CollisionCategory getCC() const;
 
     sf::RectangleShape getHB(unsigned int num = 0) const;
 

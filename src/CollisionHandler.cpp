@@ -9,15 +9,21 @@ CollisionHandler::~CollisionHandler() {}
 
 void CollisionHandler::BeginContact(b2Contact* contact)
 {
-    if(contact->GetFixtureA()->IsSensor() and contact->GetFixtureB()->IsSensor())
+    void* userDataA = contact->GetFixtureA()->GetBody()->GetUserData();
+    void* userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
+
+    if(contact->GetFixtureA()->IsSensor())
     {
-        void* userDataA = contact->GetFixtureA()->GetBody()->GetUserData();
-        void* userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
+        printInfo("Sensor of <" << static_cast<Entity*>(userDataA)->getID() << "> colliding with <" << static_cast<Entity*>(userDataB)->getID() << ">");
 
-        printInfo("Colliding <" << static_cast<Entity*>(userDataA)->getID() << "> and <" << static_cast<Entity*>(userDataB)->getID() << ">");
+        static_cast<PhysicEntity*>(userDataA)->onCollision((intptr_t)contact->GetFixtureA()->GetUserData(), static_cast<PhysicEntity*>(userDataB));
+    }
 
-        static_cast<PhysicEntity*>(userDataA)->onCollision(static_cast<PhysicEntity*>(userDataB));
-        static_cast<PhysicEntity*>(userDataB)->onCollision(static_cast<PhysicEntity*>(userDataA));
+    if(contact->GetFixtureB()->IsSensor())
+    {
+        printInfo("Sensor of <" << static_cast<Entity*>(userDataB)->getID() << "> colliding with <" << static_cast<Entity*>(userDataA)->getID() << ">");
+
+        static_cast<PhysicEntity*>(userDataB)->onCollision((intptr_t)contact->GetFixtureB()->GetUserData(), static_cast<PhysicEntity*>(userDataA));
     }
 }
 

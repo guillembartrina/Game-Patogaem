@@ -27,6 +27,8 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const
 
 PhysicEntity::~PhysicEntity()
 {
+
+
     if(physicized)
     {
         body->GetWorld()->DestroyBody(body);
@@ -50,7 +52,8 @@ b2Body* PhysicEntity::physicize(b2World& world)
 
         for(int i = 0; i < fixtureDef.size(); i++)
         {
-            body->CreateFixture(&fixtureDef[i]);
+            b2Fixture* tmp = body->CreateFixture(&fixtureDef[i]);
+            tmp->SetUserData((void*)i);
         }
 
         if(fixtureDef.size() == 1) //If only one fixture-> simple entity, needs a collision sensor
@@ -91,7 +94,7 @@ void PhysicEntity::setRotation(float angle)
 
 void PhysicEntity::update(const sf::Time deltatime)
 {
-    if(physicized)
+    if(physicized and body->IsAwake())
     {
         Entity::setPosition(pixelize(toVector2f(body->GetPosition())));
         if(not body->IsFixedRotation()) Entity::setRotation(anglize(body->GetAngle()));
@@ -100,7 +103,7 @@ void PhysicEntity::update(const sf::Time deltatime)
     Entity::update(deltatime);
 }
 
-void PhysicEntity::onCollision(PhysicEntity* collided) {}
+void PhysicEntity::onCollision(int fixtureid, PhysicEntity* collided) {}
 
 //void PhysicEntity::onReduceDurability() {}
 

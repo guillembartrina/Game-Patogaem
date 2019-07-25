@@ -43,9 +43,9 @@ $(D_OBJ)/%.o: $(D_IMGUI)/%.cpp
 	g++ -c $< -o $@ -I$(D_INC_M) -I$(D_INC) -I$(D_IMGUI) -I$(D_SFML_INC) -I$(D_BOX2D_INC) $(CXX_FLAGS) $(GL_FLAGS)
 
 cleanall:
-	rm obj/*.o
-	rm bin/*.exe
+	rm $(D_INC)/*.o
+	rm $(D_BIN)/*.exe
 
 clean:
 	rm $(F_OBJ)
-	rm bin/*.exe
+	rm $(D_BIN)/*.exe

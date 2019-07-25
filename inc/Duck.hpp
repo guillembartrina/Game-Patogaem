@@ -30,7 +30,7 @@ class Duck : public PhysicEntity
 
     void handleEvents(const sf::Event& event);
 
-    void onCollision(PhysicEntity* collided) override;
+    void onCollision(int fixtureid, PhysicEntity* collided) override;
 
     private:
 
@@ -40,7 +40,9 @@ class Duck : public PhysicEntity
     MovementSide side;
 
     bool grounded;
-    sf::Vector2f force;
+    sf::Vector2f vel;
+
+    bool lc, rc;
 };
 
 #endif

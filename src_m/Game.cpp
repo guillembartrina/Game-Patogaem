@@ -70,11 +70,7 @@ void Game::handleEvents()
   while (window.pollEvent(event))
   {
     switch(event.type)
-    {
-      case sf::Event::Closed:
-        window.close();
-        break;
-        
+    {       
       default:
         break;
     }

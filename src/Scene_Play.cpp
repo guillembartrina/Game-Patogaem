@@ -113,8 +113,21 @@ void Scene_Play::handleEvents(const sf::Event& event)
 
 void Scene_Play::update(const sf::Time deltatime)
 {
+    //TEMPORAL
+    sf::Vector2f duckPosToView = duck->getPosition() - view.getCenter();
+    sf::Vector2f movingBounds = sf::Vector2f(core.window->getSize()) * 0.2f;;
+
+    if(duckPosToView.x > movingBounds.x) view.move(sf::Vector2f(duckPosToView.x - movingBounds.x, 0.f));
+    if(duckPosToView.x < -movingBounds.x) view.move(sf::Vector2f(duckPosToView.x + movingBounds.x, 0.f));
+    if(duckPosToView.y > movingBounds.y) view.move(sf::Vector2f(0.f, duckPosToView.y - movingBounds.y));
+    if(duckPosToView.y < -movingBounds.y) view.move(sf::Vector2f(0.f, duckPosToView.y + movingBounds.y));
+
+    //--------------
+
     core.window->setView(view);
     background.setPosition(view.getCenter() - view.getSize() / 2.f);
+
+    world.Step(deltatime.asSeconds(), 2, 2);
 
     duck->update(deltatime);
 
@@ -122,8 +135,6 @@ void Scene_Play::update(const sf::Time deltatime)
     {
         it->second->update(deltatime);
     }
-
-    world.Step(deltatime.asSeconds(), 2, 2);
 
     while(not toDelete.empty())
     {
@@ -146,6 +157,10 @@ void Scene_Play::draw(sf::RenderWindow& window) const
         window.draw(static_cast<Duck*>(duck)->getHB(0));
         window.draw(static_cast<Duck*>(duck)->getHB(1));
         window.draw(static_cast<Duck*>(duck)->getHB(2));
+        window.draw(static_cast<Duck*>(duck)->getHB(3));
+        window.draw(static_cast<Duck*>(duck)->getHB(4));
+        window.draw(static_cast<Duck*>(duck)->getHB(5));
+        window.draw(static_cast<Duck*>(duck)->getHB(6));
     }
 
     for(EntityHolder::const_iterator it = entities.begin(); it != entities.end(); it++)
@@ -191,7 +206,7 @@ void Scene_Play::loadLevel(Level* level)
                 if(i-1 >= 0 and map[j][i-1] > 0 and map[j][i-1] <= 200) sides = sides & 0x0E;
                 if(i+1 < NUMCELLS.x and map[j][i+1] > 0 and map[j][i+1] <= 200) sides = sides & 0x0B;
                 if(j-1 >= 0 and map[j-1][i] > 0 and map[j-1][i] <= 200) sides = sides & 0x07;
-                if(i+1 < NUMCELLS.y and map[j+1][i] > 0 and map[j+1][i] <= 200) sides = sides & 0x0D;
+                if(j+1 < NUMCELLS.y and map[j+1][i] > 0 and map[j+1][i] <= 200) sides = sides & 0x0D;
                 EntityHolder::iterator it = addEntity(new Block(core, this, cellToPixels(sf::Vector2u(i, j)), sides));
 
                 PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);

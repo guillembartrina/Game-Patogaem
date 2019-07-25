@@ -10,7 +10,14 @@
 
 #include "Level.hpp"
 
-#define printInfo(str) std::cerr << "INFO: " << str << std::endl; 
+#define DEBUG_OFF
+
+#ifdef DEBUG_ON
+#define printInfo(str) std::cerr << "INFO: " << str << std::endl;
+#else
+#define printInfo(str) ;
+#endif
+
 
 static const sf::Vector2f ZEROVECTOR_F = sf::Vector2f(0.f, 0.f);
 static const sf::Vector2i ZEROVECTOR_I = sf::Vector2i(0, 0);

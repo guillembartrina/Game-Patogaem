@@ -1,13 +1,17 @@
 
 #include "Duck.hpp"
 
+#include "Block.hpp"
+
 Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEntity(play, position)
 {
     state = MovementState::IDLE;
     side = MovementSide::MV_RIGHT;
 
     grounded = true;
-    force = ZEROVECTOR_F;
+    vel = ZEROVECTOR_F;
+
+    lc = rc = false;
 
     rects.push_back(sf::IntRect(ZEROVECTOR_I, sf::Vector2i(64, 128)));
     rects.push_back(sf::IntRect(sf::Vector2i(64, 0), sf::Vector2i(64, 128)));
@@ -16,10 +20,15 @@ Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& posi
 
     setBody(b2BodyType::b2_dynamicBody, true);
 
-    addFixture(createRectangle(b2Vec2(62, 20), b2Vec2(0, 53)), CollisionCategory::DUCK, 0.f, 0.f, 0.f, true);
-    addFixture(createRectangle(b2Vec2(62, 20), b2Vec2(0, -53)), CollisionCategory::DUCK, 0.f, 0.f, 0.f, true);
+    addFixture(createRectangle(b2Vec2(38, 20), b2Vec2(0, 53)), CollisionCategory::DUCK, 0.f, 0.f, 0.f, true); //0
+    addFixture(createRectangle(b2Vec2(12, 20), b2Vec2(-25, 53)), CollisionCategory::DUCK, 0.f, 0.f, 0.f, true); //1
+    addFixture(createRectangle(b2Vec2(12, 20), b2Vec2(25, 53)), CollisionCategory::DUCK, 0.f, 0.f, 0.f, true); //2
+    addFixture(createRectangle(b2Vec2(52, 20), b2Vec2(0, -53)), CollisionCategory::DUCK, 0.f, 0.f, 0.f, true); //3
 
-    addFixture(createRectangle(b2Vec2(62, 126)), CollisionCategory::DUCK, 0.2f, 0.f, 1.f);
+    addFixture(createRectangle(b2Vec2(12, 16), b2Vec2(-25, 51)), CollisionCategory::DUCK, 0.f, 0.f, 0.f);
+    addFixture(createRectangle(b2Vec2(38, 20), b2Vec2(0, 53)), CollisionCategory::DUCK, 0.8f, 0.f, 1.f);
+    addFixture(createRectangle(b2Vec2(12, 16), b2Vec2(25, 51)), CollisionCategory::DUCK, 0.f, 0.f, 0.f);
+    addFixture(createRectangle(b2Vec2(62, 106), b2Vec2(0, -10)), CollisionCategory::DUCK, 0.f, 0.f, 1.f);
 
     physicize(world);
 
@@ -39,7 +48,22 @@ Duck::~Duck() {}
 
 void Duck::update(const sf::Time deltatime)
 {
-    body->ApplyForceToCenter(tob2Vec2(force), true);
+    /*
+    b2Vec2 currVel = body->GetLinearVelocity();
+    float coef = 0.92f;
+    if(grounded) coef = 0.82f;
+    float tmpVel = 0.f;
+    if(side == MovementSide::MV_LEFT) tmpVel = std::min(vel.x, currVel.x * coef);
+    else if(side == MovementSide::MV_RIGHT) tmpVel = std::max(vel.x, currVel.x * coef);
+
+    float finalVel = tmpVel - currVel.x;
+    float impulse = body->GetMass() * finalVel;
+    body->ApplyLinearImpulse(b2Vec2(impulse, 0), body->GetWorldCenter(), true);
+    */
+    if(vel.x != 0)
+    {
+        body->SetLinearVelocity(b2Vec2(vel.x, body->GetLinearVelocity().y));
+    }
     PhysicEntity::update(deltatime);
 }
 
@@ -56,7 +80,7 @@ void Duck::handleEvents(const sf::Event& event)
                     if(grounded) 
                     {
                         body->ApplyLinearImpulse(b2Vec2(0, -30), body->GetPosition(), true);
-                        //grounded = false;
+                        grounded = false;
                     }
                 }
                     break;
@@ -69,8 +93,9 @@ void Duck::handleEvents(const sf::Event& event)
                 {
                     if(state != MovementState::FLOOR)
                     {
-                        force.x -= 40;
+                        vel.x -= 8;
                         side = MovementSide::MV_LEFT;
+                        lc = true;
                     }
                 }
                     break;
@@ -78,8 +103,9 @@ void Duck::handleEvents(const sf::Event& event)
                 {
                     if(state != MovementState::FLOOR)
                     {
-                        force.x += 40;
+                        vel.x += 8;
                         side = MovementSide::MV_RIGHT;
+                        rc = true;
                     }
                 }
                     break;
@@ -102,12 +128,20 @@ void Duck::handleEvents(const sf::Event& event)
                     break;
                 case sf::Keyboard::Left:
                 {
-                    force.x += 40;
+                    if(lc)
+                    {
+                        vel.x += 8;
+                    }
+                    lc = false;
                 }
                     break;
                 case sf::Keyboard::Right:
                 {
-                    force.x -= 40;
+                    if(rc)
+                    {  
+                        vel.x -= 8;
+                    }
+                    rc = false;
                 }
                     break;
                 default:
@@ -121,7 +155,27 @@ void Duck::handleEvents(const sf::Event& event)
     sprite.setTextureRect(rects[state*2+side]);
 }
 
-void Duck::onCollision(PhysicEntity* collided)
+void Duck::onCollision(int fixtureid, PhysicEntity* collided)
 {
-    printInfo("DUCK COLLISION --> " << collided->getID());
+    printInfo("> DUCK COLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
+
+    switch(fixtureid)
+    {
+        case 0:
+        {
+            if(dynamic_cast<Block*>(collided) != nullptr)
+            {
+                grounded = true;
+                printInfo(" --- GROUNDED --- ");
+            }
+        }
+            break;
+        case 3:
+        {
+
+        }
+            break;
+        default:
+            break;
+    }
 }
