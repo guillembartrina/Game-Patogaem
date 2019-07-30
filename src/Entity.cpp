@@ -43,8 +43,8 @@ void Entity::animate(unsigned int numFrames, const sf::Time& frameTime)
         currentFrame = 0;
         currentTime = sf::Time::Zero;
 
-        sf::IntRect rect = sprite.getTextureRect();
-        sprite.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(rect.width, rect.height)));
+        //sf::IntRect rect = sprite.getTextureRect();
+        //sprite.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(rect.width, rect.height)));
 
         haveAnimation = true;
         playing = true;
@@ -104,7 +104,8 @@ void Entity::update(const sf::Time deltatime)
             currentFrame %= numFrames;
 
             sf::IntRect rect = sprite.getTextureRect();
-            sprite.setTextureRect(sf::IntRect(sf::Vector2i(currentFrame * rect.width, 0), sf::Vector2i(rect.width, rect.height)));
+            rect.left = rect.width * currentFrame;
+            sprite.setTextureRect(rect);
 
             currentTime -= frameTime;
         }

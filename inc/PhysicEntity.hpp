@@ -22,6 +22,9 @@ enum CollisionCategory
     ALL_COLLISION = 0b1 << 6
 };
 
+#define FOREGROUND_MASK 0b00000110
+#define BACKGROUND_MASK 0b00011000
+
 static b2Filter getCollisionFilter(CollisionCategory cc)
 {
     b2Filter filter;
@@ -30,19 +33,19 @@ static b2Filter getCollisionFilter(CollisionCategory cc)
     switch(cc)
     {
         case DUCK:
-        filter.maskBits = STATIC_FOREGROUND | DYNAMIC_FOREGROUND;
+        filter.maskBits = STATIC_FOREGROUND | DYNAMIC_FOREGROUND | ALL_COLLISION;
             break;
         case STATIC_FOREGROUND:
-        filter.maskBits = DUCK | STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | DYNAMIC_BACKGROUND;
+        filter.maskBits = DUCK | STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | DYNAMIC_BACKGROUND | ALL_COLLISION;
             break;
         case DYNAMIC_FOREGROUND:
-        filter.maskBits = DUCK | STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND;
+        filter.maskBits = DUCK | STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | ALL_COLLISION;
             break;
         case STATIC_BACKGROUND:
-        filter.maskBits = STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | DYNAMIC_BACKGROUND;
+        filter.maskBits = STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | DYNAMIC_BACKGROUND | ALL_COLLISION;
             break;
         case DYNAMIC_BACKGROUND:
-        filter.maskBits = STATIC_FOREGROUND | STATIC_BACKGROUND;
+        filter.maskBits = STATIC_FOREGROUND | STATIC_BACKGROUND | ALL_COLLISION;
             break;
         case NO_COLLISION:
         filter.maskBits = 0x0000;
@@ -70,10 +73,13 @@ public:
 
     b2Body* physicize(b2World& world);
 
+    //virtual void onPrecollision(int fixtureid, PhysicEntity* collided);
     virtual void onCollision(int fixtureid, PhysicEntity* collided);
+    virtual void onDecollision(int fixtureid, PhysicEntity* collided);
+    
     //virtual void onReduceDurability();
 
-    //CollisionCategory getCC() const;
+    CollisionCategory getCC() const;
 
     sf::RectangleShape getHB(unsigned int num = 0) const;
 
@@ -84,6 +90,8 @@ protected:
     void setBody(b2BodyType type, bool rotation = false);
     void addFixture(b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor = false);
 
+    void resetPhysics();
+
 private:
 
     bool physicized;
@@ -91,6 +99,8 @@ private:
     bool physics;
     b2BodyDef bodyDef;
     std::vector<b2FixtureDef> fixtureDef;
+
+    CollisionCategory cc;
     
     unsigned int durability;
 };

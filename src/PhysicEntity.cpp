@@ -5,6 +5,7 @@ PhysicEntity::PhysicEntity() : Entity()
 {
     physics = false;
     physicized = false;
+    cc = CollisionCategory::NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
 }
@@ -13,6 +14,7 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Ent
 {
     physics = false;
     physicized = false;
+    cc = CollisionCategory::NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
 }
@@ -21,14 +23,13 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const
 {
     physics = false;
     physicized = false;
+    cc = CollisionCategory::NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
 }
 
 PhysicEntity::~PhysicEntity()
 {
-
-
     if(physicized)
     {
         body->GetWorld()->DestroyBody(body);
@@ -105,7 +106,14 @@ void PhysicEntity::update(const sf::Time deltatime)
 
 void PhysicEntity::onCollision(int fixtureid, PhysicEntity* collided) {}
 
+void PhysicEntity::onDecollision(int fixtureid, PhysicEntity* collided) {}
+
 //void PhysicEntity::onReduceDurability() {}
+
+CollisionCategory PhysicEntity::getCC() const
+{
+    return cc;
+}
 
 sf::RectangleShape PhysicEntity::getHB(unsigned int num) const
 {
@@ -151,5 +159,20 @@ void PhysicEntity::addFixture(b2Shape* shape, CollisionCategory category, float 
     current.filter = getCollisionFilter(category);
     current.isSensor = sensor;
 
+    cc = category;
+
     physics = true;
+}
+
+void PhysicEntity::resetPhysics()
+{
+    for(int i = 0; i < fixtureDef.size(); i++)
+    {
+        delete fixtureDef[i].shape;
+    }
+
+    fixtureDef.clear();
+
+    physics = false;
+    physicized = false;
 }

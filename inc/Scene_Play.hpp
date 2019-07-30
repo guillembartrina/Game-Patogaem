@@ -17,6 +17,7 @@
 #include "CollisionHandler.hpp"
 #include "Level.hpp"
 
+
 class Entity;
 
 typedef std::map<unsigned int, Entity*> EntityHolder;

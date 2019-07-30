@@ -29,7 +29,7 @@ Scene_Play::Scene_Play(Core core)
     duckHBs = false;
     sceneHBs = false;
     x = y = 0;
-    m = 1;
+    m = 2;
 }
 
 Scene_Play::~Scene_Play()
@@ -88,7 +88,7 @@ void Scene_Play::handleEvents(const sf::Event& event)
                 {
                     EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));
 
-                    PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
+                    PhysicEntity* pe = static_cast<PhysicEntity*>(it->second);
                     if(pe != nullptr)
                     {
                         pe->physicize(world);
@@ -209,7 +209,7 @@ void Scene_Play::loadLevel(Level* level)
                 if(j+1 < NUMCELLS.y and map[j+1][i] > 0 and map[j+1][i] <= 200) sides = sides & 0x0D;
                 EntityHolder::iterator it = addEntity(new Block(core, this, cellToPixels(sf::Vector2u(i, j)), sides));
 
-                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
+                PhysicEntity* pe = static_cast<PhysicEntity*>(it->second);
                 if(pe != nullptr)
                 {
                     pe->physicize(world);
