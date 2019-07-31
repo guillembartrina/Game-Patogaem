@@ -5,18 +5,17 @@
 
 enum MovementSide
 {
-  Side_RIGHT = 0,
-  Side_LEFT
+  MovementSide_RIGHT = 0,
+  MovementSide_LEFT
 };
 
 enum MovementState
 {
-  State_IDLE = 0,
-  State_WALK,
-  State_JUMP,
-  State_FLY,
-  State_DOWN,
-  State_FLOOR
+  MovementState_STANDING = 0,
+  MovementState_JUMPING,
+  MovementState_FLYING,
+  MovementState_DOWNING,
+  MovementState_FLOORING
 };
 
 class Duck : public PhysicEntity
@@ -35,17 +34,19 @@ class Duck : public PhysicEntity
 
     void changeState(MovementState newstate);
 
+    MovementState getState() const;
+
     private:
 
     MovementState state;
     MovementSide side;
 
     int groundings;
-    sf::Vector2f vel;
 
-    bool lc, rc;
+    bool lc, rc, uc, dc;
+    bool gr;
 
-    b2Body* bodies[3];
+    b2Body* bodies[3]; //1:down, 2:floor, 0:others
 };
 
 #endif

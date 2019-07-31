@@ -5,7 +5,7 @@ PhysicEntity::PhysicEntity() : Entity()
 {
     physics = false;
     physicized = false;
-    cc = CollisionCategory::NO_COLLISION;
+    cc = CollisionCategory_NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
 }
@@ -14,7 +14,7 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Ent
 {
     physics = false;
     physicized = false;
-    cc = CollisionCategory::NO_COLLISION;
+    cc = CollisionCategory_NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
 }
@@ -23,7 +23,7 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const
 {
     physics = false;
     physicized = false;
-    cc = CollisionCategory::NO_COLLISION;
+    cc = CollisionCategory_NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
 }
@@ -59,7 +59,7 @@ b2Body* PhysicEntity::physicize(b2World& world)
 
         if(fixtureDef.size() == 1) //If only one fixture-> simple entity, needs a collision sensor
         {
-            fixtureDef[0].filter = getCollisionFilter(CollisionCategory::ALL_COLLISION);
+            fixtureDef[0].filter = getCollisionFilter(CollisionCategory_ALL_COLLISION);
             fixtureDef[0].isSensor = true;
             body->CreateFixture(&fixtureDef[0]);
         }

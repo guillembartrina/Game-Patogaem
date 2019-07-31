@@ -13,13 +13,13 @@
 
 enum CollisionCategory
 {
-    DUCK = 0b1 << 0,
-    STATIC_FOREGROUND = 0b1 << 1,
-    DYNAMIC_FOREGROUND = 0b1 << 2,
-    STATIC_BACKGROUND = 0b1 << 3,
-    DYNAMIC_BACKGROUND = 0b1 << 4,
-    NO_COLLISION = 0b1 << 5,
-    ALL_COLLISION = 0b1 << 6
+    CollisionCategory_DUCK = 0b1 << 0,
+    CollisionCategory_STATIC_FOREGROUND = 0b1 << 1,
+    CollisionCategory_DYNAMIC_FOREGROUND = 0b1 << 2,
+    CollisionCategory_STATIC_BACKGROUND = 0b1 << 3,
+    CollisionCategory_DYNAMIC_BACKGROUND = 0b1 << 4,
+    CollisionCategory_NO_COLLISION = 0b1 << 5,
+    CollisionCategory_ALL_COLLISION = 0b1 << 6
 };
 
 #define FOREGROUND_MASK 0b00000110
@@ -32,25 +32,25 @@ static b2Filter getCollisionFilter(CollisionCategory cc)
 
     switch(cc)
     {
-        case DUCK:
-        filter.maskBits = STATIC_FOREGROUND | DYNAMIC_FOREGROUND | ALL_COLLISION;
+        case CollisionCategory_DUCK:
+        filter.maskBits = CollisionCategory_STATIC_FOREGROUND | CollisionCategory_DYNAMIC_FOREGROUND | CollisionCategory_ALL_COLLISION;
             break;
-        case STATIC_FOREGROUND:
-        filter.maskBits = DUCK | STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | DYNAMIC_BACKGROUND | ALL_COLLISION;
+        case CollisionCategory_STATIC_FOREGROUND:
+        filter.maskBits = CollisionCategory_DUCK | CollisionCategory_STATIC_FOREGROUND | CollisionCategory_DYNAMIC_FOREGROUND | CollisionCategory_STATIC_BACKGROUND | CollisionCategory_DYNAMIC_BACKGROUND | CollisionCategory_ALL_COLLISION;
             break;
-        case DYNAMIC_FOREGROUND:
-        filter.maskBits = DUCK | STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | ALL_COLLISION;
+        case CollisionCategory_DYNAMIC_FOREGROUND:
+        filter.maskBits = CollisionCategory_DUCK | CollisionCategory_STATIC_FOREGROUND | CollisionCategory_DYNAMIC_FOREGROUND | CollisionCategory_STATIC_BACKGROUND | CollisionCategory_ALL_COLLISION;
             break;
-        case STATIC_BACKGROUND:
-        filter.maskBits = STATIC_FOREGROUND | DYNAMIC_FOREGROUND | STATIC_BACKGROUND | DYNAMIC_BACKGROUND | ALL_COLLISION;
+        case CollisionCategory_STATIC_BACKGROUND:
+        filter.maskBits = CollisionCategory_STATIC_FOREGROUND | CollisionCategory_DYNAMIC_FOREGROUND | CollisionCategory_STATIC_BACKGROUND | CollisionCategory_DYNAMIC_BACKGROUND | CollisionCategory_ALL_COLLISION;
             break;
-        case DYNAMIC_BACKGROUND:
-        filter.maskBits = STATIC_FOREGROUND | STATIC_BACKGROUND | ALL_COLLISION;
+        case CollisionCategory_DYNAMIC_BACKGROUND:
+        filter.maskBits = CollisionCategory_STATIC_FOREGROUND | CollisionCategory_STATIC_BACKGROUND | CollisionCategory_ALL_COLLISION;
             break;
-        case NO_COLLISION:
+        case CollisionCategory_NO_COLLISION:
         filter.maskBits = 0x0000;
             break;
-        case ALL_COLLISION:
+        case CollisionCategory_ALL_COLLISION:
         filter.maskBits = 0xFFFF;
     }
 

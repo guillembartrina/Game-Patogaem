@@ -3,6 +3,7 @@
 #define UTILS_HPP
 
 #include <iostream>
+#include <string>
 
 #include "SFML/System/Vector2.hpp"
 
@@ -64,6 +65,8 @@ static unsigned int map[20][40] =
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1},
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
+
+static std::string MovementState_String[5] = { "Standing", "Jumping", "Flying", "Downing", "Flooring"}; 
 
 #endif
 

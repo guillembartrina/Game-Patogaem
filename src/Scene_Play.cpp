@@ -248,6 +248,8 @@ void Scene_Play::imgui()
             ImGui::Checkbox("Scene HBs", &sceneHBs);
         }
 
+        ImGui::Text(MovementState_String[static_cast<Duck*>(duck)->getState()].c_str());
+
         /*
         ImGui::PushItemWidth(70.f);
         ImGui::InputInt("X", &x, 0, 100);
@@ -267,10 +269,10 @@ void Scene_Play::imgui()
         }
         ImGui::BeginChild("CollCat", ImVec2(240, 140), true);
         ImGui::Text("CollisionCategory");
-        ImGui::RadioButton("S_F", &m, CollisionCategory::STATIC_FOREGROUND);
-        ImGui::RadioButton("S_B", &m, CollisionCategory::STATIC_BACKGROUND);
-        ImGui::RadioButton("D_F", &m, CollisionCategory::DYNAMIC_FOREGROUND);
-        ImGui::RadioButton("D_B", &m, CollisionCategory::DYNAMIC_BACKGROUND);
+        ImGui::RadioButton("S_F", &m, CollisionCategory_STATIC_FOREGROUND);
+        ImGui::RadioButton("S_B", &m, CollisionCategory_STATIC_BACKGROUND);
+        ImGui::RadioButton("D_F", &m, CollisionCategory_DYNAMIC_FOREGROUND);
+        ImGui::RadioButton("D_B", &m, CollisionCategory_DYNAMIC_BACKGROUND);
         ImGui::EndChild();
         */
         ImGui::End();
