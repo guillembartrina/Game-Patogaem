@@ -6,6 +6,7 @@
 Entity::Entity()
 {
     ID = 0;
+    CODE = 0;
     haveSprite = false;
     haveAnimation = false;
     setPosition(ZEROVECTOR_F);
@@ -14,6 +15,7 @@ Entity::Entity()
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position) : play(play)
 {
     ID = play->getNextID();
+    CODE = 0;
     haveSprite = false;
     haveAnimation = false;
     setPosition(position);
@@ -22,6 +24,7 @@ Entity::Entity(Scene_Play* play, const sf::Vector2f& position) : play(play)
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : play(play)
 {
     ID = play->getNextID();
+    CODE = 0;
     haveSprite = true;
     haveAnimation = false;
     sprite.setTexture(texture);

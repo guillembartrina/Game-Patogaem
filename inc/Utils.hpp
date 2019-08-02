@@ -9,7 +9,10 @@
 
 #include "Box2D/Collision/b2Collision.h"
 
+#include "Entity.hpp"
 #include "Level.hpp"
+
+//All includes
 
 #define DEBUG_OFF
 
@@ -19,30 +22,33 @@
 #define printInfo(str) ;
 #endif
 
-
 static const sf::Vector2f ZEROVECTOR_F = sf::Vector2f(0.f, 0.f);
 static const sf::Vector2i ZEROVECTOR_I = sf::Vector2i(0, 0);
 
 static const sf::Vector2f CELLSIZE = sf::Vector2f(64.f, 64.f);
 static const sf::Vector2u NUMCELLS = sf::Vector2u(40, 20);
 
-/*
-NUM CODES:
-- 0 > empty
-- 1-200 SF
-- 201-400 DF
-- 401-600 SB
-- 601-1000 DB
-*/
+class Entity;
 
-/*
-enum Codes
+enum ItemCode
 {
-
+    DEFAULT = 0x0000
 };
-*/
 
-static unsigned int map[20][40] = 
+static Entity* getEntitybyCode(ItemCode ic)
+{
+    switch(ic)
+    {
+        case 0x0000:
+            break;
+        default:
+            break;
+    }
+
+    return nullptr;
+};
+
+static unsigned int testmap[20][40] = 
 {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -69,8 +75,3 @@ static unsigned int map[20][40] =
 static std::string MovementState_String[5] = { "Standing", "Jumping", "Flying", "Downing", "Flooring"}; 
 
 #endif
-
-//if(viewDuck.x >= view.getSize().x * 0.3f) view.move(sf::Vector2f(viewDuck.x - view.getSize().x * 0.3f, 0.f));
-    //else if(viewDuck.x <= view.getSize().x * -0.3f) view.move(sf::Vector2f(viewDuck.x - view.getSize().x * -0.3f, 0.f));
-    //if(viewDuck.y >= view.getSize().y * 0.3f) view.move(sf::Vector2f(0.f, viewDuck.y - view.getSize().y * 0.3f));
-    //else if(viewDuck.y <= view.getSize().y * -0.3f) view.move(sf::Vector2f(0.f, viewDuck.y - view.getSize().y * -0.3f));

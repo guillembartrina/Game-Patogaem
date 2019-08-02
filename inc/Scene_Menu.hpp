@@ -6,6 +6,8 @@
 #include "imgui.h"
 #include "imguiSFML.h"
 
+#define NUM_OPTIONS 3
+
 class Scene_Menu : public Scene
 {
 public:
@@ -27,13 +29,14 @@ public:
 
 private:
 
-    sf::Text t_title;
+    sf::Text title;
+    sf::Text options[NUM_OPTIONS];
 
-    sf::Text t_play;
-    sf::Text t_exit;
+    static const std::string texts[NUM_OPTIONS];
 
     int currentOption;
 
+    bool updateRequest;
 };
 
 #endif

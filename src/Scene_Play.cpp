@@ -8,7 +8,7 @@
 #include "Block.hpp"
 #include "Duck.hpp"
 
-Scene_Play::Scene_Play(Core core)
+Scene_Play::Scene_Play(Core core, std::string levelname)
 : Scene(core)
 , world(b2Vec2(0.f, 40.f))
 {
@@ -88,11 +88,7 @@ void Scene_Play::handleEvents(const sf::Event& event)
                 {
                     EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));
 
-                    PhysicEntity* pe = static_cast<PhysicEntity*>(it->second);
-                    if(pe != nullptr)
-                    {
-                        pe->physicize(world);
-                    }
+                    static_cast<PhysicEntity*>(it->second)->physicize(world);       
                 }
                     break;
                 default:
@@ -181,42 +177,10 @@ sf::Vector2f Scene_Play::cellToPixels(sf::Vector2u cell) const
 {
     if(cell.x >= NUMCELLS.x or cell.y >= NUMCELLS.y)
     {
-        std::cerr << "WARNING: Outisde map request position" << std::endl;
+        std::cerr << "WARNING: Outisde testmap request position" << std::endl;
         return sf::Vector2f(CELLSIZE) * 0.5f;
     }
     return sf::Vector2f(cell.x * CELLSIZE.x, cell.y * CELLSIZE.y) + (sf::Vector2f(CELLSIZE) * 0.5f);
-}
-
-void Scene_Play::loadLevel(Level* level)
-{
-    entities.clear();
-
-    sf::Vector2u sides[4] = { sf::Vector2u(0, -1), sf::Vector2u(1, 0), sf::Vector2u(0, 1), sf::Vector2u(-1, 0) };
-
-    background.setTexture(&core.resources->Texture(level->background));
-
-    for(int i = 0; i < NUMCELLS.x; i++)
-    {
-        for(int j = 0; j < NUMCELLS.y; j++)
-        {
-            if(map[j][i] > 0 and map[j][i] <= 200)
-            {
-                //EntityHolder::iterator it = addEntity(new GenericPhysicEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "ts_castle_w_c"));
-                char sides = 0x0F;
-                if(i-1 >= 0 and map[j][i-1] > 0 and map[j][i-1] <= 200) sides = sides & 0x0E;
-                if(i+1 < NUMCELLS.x and map[j][i+1] > 0 and map[j][i+1] <= 200) sides = sides & 0x0B;
-                if(j-1 >= 0 and map[j-1][i] > 0 and map[j-1][i] <= 200) sides = sides & 0x07;
-                if(j+1 < NUMCELLS.y and map[j+1][i] > 0 and map[j+1][i] <= 200) sides = sides & 0x0D;
-                EntityHolder::iterator it = addEntity(new Block(core, this, cellToPixels(sf::Vector2u(i, j)), sides));
-
-                PhysicEntity* pe = static_cast<PhysicEntity*>(it->second);
-                if(pe != nullptr)
-                {
-                    pe->physicize(world);
-                }
-            }
-        }
-    }
 }
 
 unsigned int Scene_Play::getNextID()
@@ -236,11 +200,41 @@ void Scene_Play::deleteEntity(unsigned int id)
     toDelete.push(id);
 }
 
+void Scene_Play::loadLevel(Level* level)
+{
+    entities.clear();
+
+    sf::Vector2u sides[4] = { sf::Vector2u(0, -1), sf::Vector2u(1, 0), sf::Vector2u(0, 1), sf::Vector2u(-1, 0) };
+
+    background.setTexture(&core.resources->Texture(level->background));
+
+    for(int i = 0; i < NUMCELLS.x; i++)
+    {
+        for(int j = 0; j < NUMCELLS.y; j++)
+        {
+            if(testmap[j][i] > 0 and testmap[j][i] <= 200)
+            {
+                //EntityHolder::iterator it = addEntity(new GenericPhysicEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "ts_castle_w_c"));
+                char sides = 0x0F;
+                if(i-1 >= 0 and testmap[j][i-1] > 0 and testmap[j][i-1] <= 200) sides = sides & 0x0E;
+                if(i+1 < NUMCELLS.x and testmap[j][i+1] > 0 and testmap[j][i+1] <= 200) sides = sides & 0x0B;
+                if(j-1 >= 0 and testmap[j-1][i] > 0 and testmap[j-1][i] <= 200) sides = sides & 0x07;
+                if(j+1 < NUMCELLS.y and testmap[j+1][i] > 0 and testmap[j+1][i] <= 200) sides = sides & 0x0D;
+
+                EntityHolder::iterator it = addEntity(new Block(core, this, cellToPixels(sf::Vector2u(i, j)), sides));
+
+                static_cast<PhysicEntity*>(it->second)->physicize(world);
+            }
+        }
+    }
+}
+
 void Scene_Play::imgui()
 {
     if(DEBUG_MENU_ENABLE)
     {
-        ImGui::Begin("DEBUG");
+        bool open = true;
+        ImGui::Begin("DEBUG", &open, ImVec2(200, 400));
 
         if(ImGui::CollapsingHeader("HBs"))
         {

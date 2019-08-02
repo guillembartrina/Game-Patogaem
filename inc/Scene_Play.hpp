@@ -8,7 +8,7 @@
 #include "Scene.hpp"
 
 #include "Box2D/Box2D.h"
-#include "Box2DUtils.hpp"
+#include "Utils_Box2D.hpp"
 
 #include "imgui.h"
 #include "imguiSFML.h"
@@ -26,7 +26,7 @@ class Scene_Play : public Scene
 {
 public:
 
-    Scene_Play(Core core);
+    Scene_Play(Core core, std::string levelname);
     ~Scene_Play();
 
     void init();

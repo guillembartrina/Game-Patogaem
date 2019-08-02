@@ -57,6 +57,7 @@ private:
     Scene_Play* play;
 
     unsigned int ID;
+    unsigned short CODE; //default: 0
 
 };
 

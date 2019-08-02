@@ -6,7 +6,7 @@
 #include "Box2D/Dynamics/b2Fixture.h"
 #include "Box2D/Dynamics/b2World.h"
 
-#include "Box2DUtils.hpp"
+#include "Utils_Box2D.hpp"
 #include "Entity.hpp"
 
 #include "Utils.hpp"

@@ -2,6 +2,9 @@
 #include "Scene_Menu.hpp"
 
 #include "Scene_Play.hpp"
+#include "Scene_Editor.hpp"
+
+const std::string Scene_Menu::texts[NUM_OPTIONS] = {"PLAY", "EDITOR", "EXIT"};
 
 Scene_Menu::Scene_Menu(Core core)
 : Scene(core)
@@ -11,25 +14,24 @@ Scene_Menu::~Scene_Menu() {}
 
 void Scene_Menu::init()
 {
-    t_title.setFont(core.resources->Font("font"));
-    t_title.setString("TITLE");
-    t_title.setCharacterSize(90);
-    t_title.setFillColor(sf::Color::Yellow);
-    t_title.setPosition(86, 100);
+    title.setFont(core.resources->Font("font"));
+    title.setString("TITLE");
+    title.setCharacterSize(90);
+    title.setFillColor(sf::Color::Yellow);
+    title.setPosition(86, 100);
 
-    t_play.setFont(core.resources->Font("font"));
-    t_play.setString("PLAY");
-    t_play.setCharacterSize(60);
-    t_play.setFillColor(sf::Color::White);
-    t_play.setPosition(160, 300);
-
-    t_exit.setFont(core.resources->Font("font"));
-    t_exit.setString("EXIT");
-    t_exit.setCharacterSize(60);
-    t_exit.setFillColor(sf::Color::White);
-    t_exit.setPosition(160, 400);
+    for(int i = 0; i < NUM_OPTIONS; i++)
+    {
+        options[i].setFont(core.resources->Font("font"));
+        options[i].setString(texts[i]);
+        options[i].setCharacterSize(60);
+        options[i].setFillColor(sf::Color::White);
+        options[i].setPosition(160, 300+i*100);
+    }
 
     currentOption = 0;
+
+    updateRequest = true;
 }
 
 void Scene_Menu::handleEvents(const sf::Event& event)
@@ -42,23 +44,33 @@ void Scene_Menu::handleEvents(const sf::Event& event)
             {
                 case sf::Keyboard::Down:
                 {
-                    if(currentOption == 0) ++currentOption;
+                    if(currentOption < NUM_OPTIONS-1) currentOption++;
+
+                    updateRequest = true;
                 }
                     break;
                 case sf::Keyboard::Up:
                 {
-                    if(currentOption == 1) --currentOption;
+                    if(currentOption > 0) currentOption--;
+                
+                    updateRequest = true;
                 }
                     break;
                 case sf::Keyboard::Return:
                 {
-                    if(currentOption == 0)
+                    switch(currentOption)
                     {
-                        core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Play(core)));
-                    }
-                    else if(currentOption == 1)
-                    {
-                        core.sceneHandler->popScene();
+                        case 0:
+                            core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Play(core, "XXX")));
+                            break;
+                        case 1:
+                            core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Editor(core)));
+                            break;
+                        case 2:
+                            core.sceneHandler->popScene();
+                            break;
+                        default:
+                            break;
                     }
                 }
                     break;
@@ -70,28 +82,25 @@ void Scene_Menu::handleEvents(const sf::Event& event)
         default:
             break;
     }
-}
 
-void Scene_Menu::update(const sf::Time deltatime)
-{
-    t_play.setFillColor(sf::Color::White);
-    t_exit.setFillColor(sf::Color::White);
-
-    if(currentOption == 0)
+    if(updateRequest)
     {
-        t_play.setFillColor(sf::Color::Green);
-    }
-    else if(currentOption == 1)
-    {
-        t_exit.setFillColor(sf::Color::Green);
+        for(int i = 0; i < NUM_OPTIONS; i++)
+        {
+            if(i == currentOption) options[i].setFillColor(sf::Color::Green);
+            else options[i].setFillColor(sf::Color::White);
+        }
+        updateRequest = false;
     }
 }
+
+void Scene_Menu::update(const sf::Time deltatime) {}
 
 void Scene_Menu::draw(sf::RenderWindow& window) const
 {
-    window.draw(t_title);
-    window.draw(t_play);
-    window.draw(t_exit);
+    window.draw(title);
+    
+    for(int i = 0; i < NUM_OPTIONS; i++) window.draw(options[i]);
 }
 
 void Scene_Menu::pause() {}

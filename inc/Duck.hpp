@@ -41,10 +41,10 @@ class Duck : public PhysicEntity
     MovementState state;
     MovementSide side;
 
-    int groundings;
+    int groundings, headings;
 
     bool lc, rc, uc, dc;
-    bool gr;
+    bool gr, hr;
 
     b2Body* bodies[3]; //1:down, 2:floor, 0:others
 };

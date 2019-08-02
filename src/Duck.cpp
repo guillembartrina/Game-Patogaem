@@ -7,7 +7,7 @@ Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& posi
     state = MovementState_STANDING;
     side = MovementSide_RIGHT;
 
-    groundings = 0;
+    groundings = headings = 0;
 
     lc = rc = uc = dc = false;
     gr = false; //?
@@ -33,7 +33,7 @@ Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& posi
     //-->1
     resetPhysics();
 
-    addFixture(createRectangle(b2Vec2(62, 106), b2Vec2(0, 10)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
+    addFixture(createRectangle(b2Vec2(62, 96), b2Vec2(0, 15)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
     addFixture(createRectangle(b2Vec2(52, 20), b2Vec2(0, 53)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //1
     addFixture(createRectangle(b2Vec2(52, 20), b2Vec2(0, -33)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //2
 
@@ -45,8 +45,10 @@ Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& posi
     //-->2
     resetPhysics();
 
-    addFixture(createRectangle(b2Vec2(126, 62), b2Vec2(0, 32)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
+    addFixture(createRectangle(b2Vec2(126, 62), b2Vec2(0, 33)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
     addFixture(createRectangle(b2Vec2(52, 20), b2Vec2(0, 53)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //1
+    addFixture(createRectangle(b2Vec2(96, 20), b2Vec2(0, 0)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //2
+
 
     physicize(world);
 
@@ -56,6 +58,9 @@ Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& posi
     //---
 
     body = bodies[0];
+
+    //create vectors with coefs and velocities to not HARD CODE!!
+    //clean code and calls to body, swithes,...
 }
 
 Duck::~Duck()
@@ -70,31 +75,41 @@ void Duck::update(const sf::Time deltatime)
     if(gr and (state == MovementState_FLYING or state == MovementState_JUMPING))
     {
         if(dc) changeState(MovementState_DOWNING);
-        else if(uc)
+        /*else if(uc)
         {
-            body->ApplyLinearImpulse(b2Vec2(0, -28), body->GetPosition(), true);
+            body->ApplyLinearImpulse(b2Vec2(0, -32), body->GetPosition(), true);
             changeState(MovementState_JUMPING); //? check no jump
         }
+        */
         else
         {
             changeState(MovementState_STANDING);
         }
     }
 
+    if(hr and state == MovementState_FLOORING)
+    {
+        changeState(MovementState_STANDING);
+    }
+
     gr = false;
+    hr = false;
 
     if(state != MovementState_FLOORING and (lc xor rc))
     {
         b2Vec2 currentVel = body->GetLinearVelocity();
         float idealVel = ((side == MovementSide_LEFT) ? -7.f : 7.f);
+        if(state == MovementState_FLYING) idealVel *= 0.6;
         float impulse = body->GetMass() * (idealVel - currentVel.x);
         body->ApplyLinearImpulse(b2Vec2(impulse, 0), body->GetWorldCenter(), true);
         playAnimation();
     }
     else
     {
+        float coef = 0.88f;
+        if(state == MovementState_FLOORING) coef = 0.98f;
         b2Vec2 currentVel = body->GetLinearVelocity();
-        if(std::abs(currentVel.x) > 0.001f)
+        if(std::abs(currentVel.x) > 0.05f)
         {
             float idealVel = currentVel.x * 0.9f; //diferent coefs?
             float impulse = body->GetMass() * (idealVel - currentVel.x);
@@ -103,8 +118,21 @@ void Duck::update(const sf::Time deltatime)
         else
         {
             body->SetLinearVelocity(b2Vec2(0.f, currentVel.y));
+
+            if(state == MovementState_FLOORING)
+            {
+                if(not headings)
+                {
+                    changeState(MovementState_STANDING);
+                }
+            }
         }
         stopAnimation();
+    }
+
+    if(state == MovementState_FLYING and body->GetLinearVelocity().y > 0.f)
+    {
+        body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, std::min(body->GetLinearVelocity().y, 1.8f)));
     }
 
     PhysicEntity::update(deltatime);
@@ -120,10 +148,14 @@ void Duck::handleEvents(const sf::Event& event)
             {
                 case sf::Keyboard::Up:
                 {
-                    if(state == MovementState_STANDING) //groundings?
+                    if(state == MovementState_STANDING and not headings) //groundings?
                     {
-                        body->ApplyLinearImpulse(b2Vec2(0, -28), body->GetPosition(), true);
-                        changeState(MovementState_JUMPING); //? check no jump
+                        body->ApplyLinearImpulse(b2Vec2(0, -32), body->GetPosition(), true);
+                        changeState(MovementState_JUMPING);
+                    }
+                    else if(state == MovementState_JUMPING)
+                    {
+                        changeState(MovementState_FLYING);
                     }
                     uc = true;
                 }
@@ -134,7 +166,7 @@ void Duck::handleEvents(const sf::Event& event)
                     {
                         case MovementState_STANDING:
                         {
-                            if(lc xor rc) changeState(MovementState_FLOORING);
+                            if(lc xor rc) changeState(MovementState_FLOORING); //add pulse?
                             else changeState(MovementState_DOWNING);
                         }
                             break;
@@ -196,7 +228,14 @@ void Duck::handleEvents(const sf::Event& event)
             {
                 case sf::Keyboard::Up:
                 {
-                    //Lower the jump? if vel.y cap amunt, multiplicar * 0.8f
+                    if(not groundings and state == MovementState_FLYING)
+                    {
+                        changeState(MovementState_JUMPING);
+                    }
+                    else if(state == MovementState_JUMPING)
+                    {
+                        body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, body->GetLinearVelocity().y * 0.6f));
+                    }
                     uc = false;
                 }
                     break;
@@ -211,10 +250,13 @@ void Duck::handleEvents(const sf::Event& event)
                             break;
                         case MovementState_FLOORING:
                         {
-                            changeState(MovementState_STANDING);
-                            if(lc and not rc) side = MovementSide_LEFT;
-                            else if(rc and not lc) side = MovementSide_RIGHT;
-                            //check no stand up!
+                            if(not headings)
+                            {
+                                changeState(MovementState_STANDING);
+                                if(lc and not rc) side = MovementSide_LEFT;
+                                else if(rc and not lc) side = MovementSide_RIGHT;
+                                //check no stand up!
+                            }
                         }
                             break;
                         default:
@@ -267,11 +309,15 @@ void Duck::onCollision(int fixtureid, PhysicEntity* collided)
                 {
                     gr = true;
                 }
-
-                //if up resalt!
-                //if down when flying --> change to down
-
                 groundings++;
+            }
+        }
+            break;
+        case 2:
+        {
+            if(collided->getCC() & FOREGROUND_MASK)
+            {
+                headings++;
             }
         }
             break;
@@ -291,6 +337,19 @@ void Duck::onDecollision(int fixtureid, PhysicEntity* collided)
             if(collided->getCC() & FOREGROUND_MASK)
             {
                 groundings--;
+            }
+        }
+            break;
+        case 2:
+        {
+            if(collided->getCC() & FOREGROUND_MASK)
+            {
+                if(headings == 1)
+                {
+                    hr = true;
+                }
+
+                headings--;
             }
         }
             break;
