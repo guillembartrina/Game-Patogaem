@@ -1,6 +1,9 @@
 
 #include "PhysicEntity.hpp"
 
+#include "Utils.hpp"
+#include "Utils_Box2D.hpp"
+
 PhysicEntity::PhysicEntity() : Entity()
 {
     physics = false;
@@ -146,7 +149,7 @@ void PhysicEntity::setBody(b2BodyType type, bool rotation)
     bodyDef.fixedRotation = rotation;
 }
 
-void PhysicEntity::addFixture(b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor)
+void PhysicEntity::addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor)
 {
     fixtureDef.push_back(b2FixtureDef());
 

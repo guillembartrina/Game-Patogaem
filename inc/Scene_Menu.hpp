@@ -3,9 +3,6 @@
 
 #include "Scene.hpp"
 
-#include "imgui.h"
-#include "imguiSFML.h"
-
 #define NUM_OPTIONS 3
 
 class Scene_Menu : public Scene

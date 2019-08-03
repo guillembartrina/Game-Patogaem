@@ -2,6 +2,7 @@
 #include "CollisionHandler.hpp"
 
 #include "PhysicEntity.hpp"
+#include "Utils.hpp"
 
 CollisionHandler::CollisionHandler() {}
 

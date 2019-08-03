@@ -40,22 +40,20 @@ public:
 
 private:
 
+    //Logic
     bool phase;
+    sf::Vector2f cellsize;
 
     //Data
-    unsigned int size;
+    unsigned int levelNamesSize;
     char** levelNames;
-
-    //Info
+    
     Level level;
 
     //ImGui
     char nameBuffer[32];
     char backgroundBuffer[32];
     int currentItem;
-
-    //Drawing
-    sf::Vector2f cellsize;
 };
 
 #endif

@@ -6,10 +6,7 @@
 #include "Box2D/Dynamics/b2Fixture.h"
 #include "Box2D/Dynamics/b2World.h"
 
-#include "Utils_Box2D.hpp"
 #include "Entity.hpp"
-
-#include "Utils.hpp"
 
 enum CollisionCategory
 {
@@ -88,7 +85,7 @@ protected:
     b2Body* body;
 
     void setBody(b2BodyType type, bool rotation = false);
-    void addFixture(b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor = false);
+    void addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor = false);
 
     void resetPhysics();
 

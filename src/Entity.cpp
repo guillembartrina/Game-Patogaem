@@ -3,10 +3,12 @@
 
 #include <iostream>
 
+#include "Utils.hpp"
+
 Entity::Entity()
 {
     ID = 0;
-    CODE = 0;
+    CODE = 0x0000;
     haveSprite = false;
     haveAnimation = false;
     setPosition(ZEROVECTOR_F);
@@ -15,7 +17,7 @@ Entity::Entity()
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position) : play(play)
 {
     ID = play->getNextID();
-    CODE = 0;
+    CODE = 0x0000;
     haveSprite = false;
     haveAnimation = false;
     setPosition(position);
@@ -24,7 +26,7 @@ Entity::Entity(Scene_Play* play, const sf::Vector2f& position) : play(play)
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : play(play)
 {
     ID = play->getNextID();
-    CODE = 0;
+    CODE = 0x0000;
     haveSprite = true;
     haveAnimation = false;
     sprite.setTexture(texture);
@@ -45,9 +47,6 @@ void Entity::animate(unsigned int numFrames, const sf::Time& frameTime)
 
         currentFrame = 0;
         currentTime = sf::Time::Zero;
-
-        //sf::IntRect rect = sprite.getTextureRect();
-        //sprite.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(rect.width, rect.height)));
 
         haveAnimation = true;
         playing = true;

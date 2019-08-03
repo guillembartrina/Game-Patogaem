@@ -6,7 +6,6 @@
 #include "SFML/Graphics.hpp"
 
 #include "Scene_Play.hpp"
-#include "Utils.hpp"
 
 class Scene_Play;
 
@@ -52,12 +51,13 @@ protected:
     unsigned int currentFrame;
     sf::Time currentTime;
 
+    unsigned short CODE; //default: 0
+
 private:
 
     Scene_Play* play;
 
     unsigned int ID;
-    unsigned short CODE; //default: 0
 
 };
 

@@ -1,6 +1,9 @@
 
 #include "Scene_Play.hpp"
 
+#include "imgui.h"
+#include "imguiSFML.h"
+
 #include "PhysicEntity.hpp"
 #include "GenericEntity.hpp"
 #include "GenericPhysicEntity.hpp"
@@ -18,12 +21,11 @@ Scene_Play::Scene_Play(Core core, std::string levelname)
     background.setPosition(0, 0);
     background.setSize(sf::Vector2f(core.window->getSize()));
 
-    duck = new Duck(world, core, this, sf::Vector2f(300, 700));
-    //static_cast<Duck*>(duck)->physicize(world);
+    duck = new Duck(core, this, sf::Vector2f(300, 700), world);
 
     //TEST
-    level.name = "testlevel";
-    level.background = "background1";
+    level.setName("testlevel");
+    level.setBackground("background1");
 
     //IMGUI
     duckHBs = false;
@@ -206,7 +208,7 @@ void Scene_Play::loadLevel(Level* level)
 
     sf::Vector2u sides[4] = { sf::Vector2u(0, -1), sf::Vector2u(1, 0), sf::Vector2u(0, 1), sf::Vector2u(-1, 0) };
 
-    background.setTexture(&core.resources->Texture(level->background));
+    background.setTexture(&core.resources->Texture(level->getBackground()));
 
     for(int i = 0; i < NUMCELLS.x; i++)
     {

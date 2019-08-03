@@ -1,6 +1,8 @@
 
 #include "GenericEntity.hpp"
 
+#include "Utils.hpp"
+
 GenericEntity::GenericEntity(Core core, Scene_Play* play, const sf::Vector2f& position, std::string name) : Entity(play, position)
 {
     setSprite(core.resources->Texture(name), sf::IntRect(ZEROVECTOR_I, sf::Vector2i(CELLSIZE)));

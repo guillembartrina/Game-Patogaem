@@ -10,9 +10,6 @@
 #include "Box2D/Box2D.h"
 #include "Utils_Box2D.hpp"
 
-#include "imgui.h"
-#include "imguiSFML.h"
-
 #include "Entity.hpp"
 #include "CollisionHandler.hpp"
 #include "Level.hpp"

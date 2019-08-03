@@ -3,6 +3,8 @@
 
 #include "PhysicEntity.hpp"
 
+#include "Utils.hpp"
+
 class TestPE : public PhysicEntity
 {
     public:

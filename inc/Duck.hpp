@@ -22,7 +22,7 @@ class Duck : public PhysicEntity
 {
     public:
 
-    Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& position);
+    Duck(Core core, Scene_Play* play, const sf::Vector2f& position, b2World& world);
     ~Duck();
 
     void update(sf::Time deltatime) override;

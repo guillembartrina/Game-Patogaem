@@ -1,6 +1,8 @@
 
 #include "GenericPhysicEntity.hpp"
 
+#include "Utils.hpp"
+
 GenericPhysicEntity::GenericPhysicEntity(Core core, Scene_Play* play, const sf::Vector2f& position, std::string name) : PhysicEntity(play, position)
 {
     setSprite(core.resources->Texture(name), sf::IntRect(ZEROVECTOR_I, sf::Vector2i(CELLSIZE)));

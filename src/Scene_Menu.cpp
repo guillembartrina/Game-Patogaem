@@ -1,6 +1,9 @@
 
 #include "Scene_Menu.hpp"
 
+#include "imgui.h"
+#include "imguiSFML.h"
+
 #include "Scene_Play.hpp"
 #include "Scene_Editor.hpp"
 

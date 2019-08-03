@@ -1,10 +1,14 @@
 
 #include "Block.hpp"
 
-b2EdgeShape Block::edges[4] = {     createEdge(b2Vec2(-CELLSIZE.x / 2.f, -CELLSIZE.y / 2.f), b2Vec2(CELLSIZE.x / 2.f, -CELLSIZE.y / 2.f)),
-                                    createEdge(b2Vec2(CELLSIZE.x / 2.f, (-CELLSIZE.y / 2.f) + 0), b2Vec2(CELLSIZE.x / 2.f, (CELLSIZE.y / 2.f) - 0)),
-                                    createEdge(b2Vec2(CELLSIZE.x / 2.f, CELLSIZE.y / 2.f), b2Vec2(-CELLSIZE.x / 2.f, CELLSIZE.y / 2.f)),
-                                    createEdge(b2Vec2(-CELLSIZE.x / 2.f, (CELLSIZE.y / 2.f) - 0), b2Vec2(-CELLSIZE.x / 2.f, (-CELLSIZE.y / 2.f) + 0)) };
+#include "Utils.hpp"
+
+const b2EdgeShape Block::edges[4] = {   
+                                        createEdge(b2Vec2(-CELLSIZE.x / 2.f, -CELLSIZE.y / 2.f), b2Vec2(CELLSIZE.x / 2.f, -CELLSIZE.y / 2.f)),
+                                        createEdge(b2Vec2(CELLSIZE.x / 2.f, (-CELLSIZE.y / 2.f) + 0), b2Vec2(CELLSIZE.x / 2.f, (CELLSIZE.y / 2.f) - 0)),
+                                        createEdge(b2Vec2(CELLSIZE.x / 2.f, CELLSIZE.y / 2.f), b2Vec2(-CELLSIZE.x / 2.f, CELLSIZE.y / 2.f)),
+                                        createEdge(b2Vec2(-CELLSIZE.x / 2.f, (CELLSIZE.y / 2.f) - 0), b2Vec2(-CELLSIZE.x / 2.f, (-CELLSIZE.y / 2.f) + 0)) 
+                                    };
 
 Block::Block(Core core, Scene_Play* play, const sf::Vector2f& position, char sides = 0x0F) : PhysicEntity(play, position)
 {

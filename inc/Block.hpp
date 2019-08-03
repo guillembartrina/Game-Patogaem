@@ -13,7 +13,7 @@ class Block : public PhysicEntity
 
     private:
 
-    static b2EdgeShape edges[4];
+    static const b2EdgeShape edges[4];
 
 };
 

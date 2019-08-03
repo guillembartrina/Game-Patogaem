@@ -8,20 +8,20 @@ Scene_Editor::Scene_Editor(Core core)
 : Scene(core)
 {
     phase = false;
+    cellsize = sf::Vector2f(core.window->getSize().x / NUMCELLS.x, core.window->getSize().y / NUMCELLS.y);
 
+    //ImGui init
     strcpy(nameBuffer, "name");
     strcpy(backgroundBuffer, "background");
 
     currentItem = -1;
-
-    cellsize = sf::Vector2f(core.window->getSize().x / NUMCELLS.x, core.window->getSize().y / NUMCELLS.y);
 
     loadLevelNames();
 }
 
 Scene_Editor::~Scene_Editor()
 {
-    for(int i = 0; i < IM_ARRAYSIZE(levelNames); i++)
+    for(int i = 0; i < levelNamesSize; i++)
     {
         delete levelNames[i];
     }
@@ -51,10 +51,11 @@ void Scene_Editor::handleEvents(const sf::Event& event)
             break;
         case sf::Event::MouseButtonPressed:
         {
+            //temp
             if(phase and event.mouseButton.button == sf::Mouse::Left)
             {
                 sf::Vector2u pos(event.mouseButton.x / cellsize.x, event.mouseButton.y / cellsize.y);
-                level.items[std::make_pair(pos.x, pos.y)].push_back(1);                
+                level.add(Coord(pos.x, pos.y), 1);               
             }
         }
             break;
@@ -74,12 +75,12 @@ void Scene_Editor::update(const sf::Time deltatime)
         { 
             phase = true; 
         }
-        ImGui::ListBox("Levels", &currentItem, levelNames, size);
+        ImGui::ListBox("Levels", &currentItem, levelNames, levelNamesSize, 10);
         if(ImGui::Button("LOAD"))
         {
             if(currentItem != -1)
             {
-                deserializeLevel(currentItem);
+                //deserializeLevel(currentItem);
                 phase = true;
             }
         }
@@ -93,9 +94,8 @@ void Scene_Editor::update(const sf::Time deltatime)
         ImGui::Separator();
         if(ImGui::Button("SAVE"))
         {
-            serializeLevel();
+          //serializeLevel();
         }
-        //ImGui::ListBox("Item", &currentItem);
     }
 
     ImGui::End();
@@ -115,9 +115,11 @@ void Scene_Editor::draw(sf::RenderWindow& window) const
         {
             for(int j = 0; j < NUMCELLS.y; j++)
             {
-                if(level.items.find(std::make_pair(i, j)) != level.items.end()) shape.setFillColor(sf::Color::Blue);
+                //temp
+                if(not level.get(Coord(i, j)).empty()) shape.setFillColor(sf::Color::Blue);
                 else shape.setFillColor(sf::Color::Black);
-                shape.setPosition(sf::Vector2f(i * cellsize.x, j * cellsize.y));
+
+                shape.setPosition(sf::Vector2f(i*cellsize.x, j*cellsize.y));
                 window.draw(shape);
             }
         }
@@ -137,23 +139,23 @@ void Scene_Editor::loadLevelNames()
 
     jute::jValue data = jute::parser::parse(page);
 
-    size = data["Levels"].size();
+    levelNamesSize = data["Levels"].size();
 
-    if(size != 0)
+    if(levelNamesSize != 0)
     {
-        levelNames = new char*[size];
+        levelNames = new char*[levelNamesSize];
  
-        for(unsigned int i = 0; i < size; i++)
+        for(unsigned int i = 0; i < levelNamesSize; i++)
         {
             std::string tmp = data["Levels"][i]["name"].as_string();
             levelNames[i] = new char[tmp.length()+1];
             strcpy(levelNames[i], tmp.c_str());
         }
     }
-
-    std::cerr << size << " " << sizeof(*levelNames)/sizeof(char*) << std::endl;
 }
 
+/*
+//REMAKE
 void Scene_Editor::deserializeLevel(int num)
 {
     fstream file("rsc/levels.json");
@@ -204,3 +206,4 @@ void Scene_Editor::serializeLevel()
 
     std::cerr << out << std::endl;
 }
+*/

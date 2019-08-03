@@ -1,7 +1,9 @@
 
 #include "Duck.hpp"
 
-Duck::Duck(b2World& world, Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEntity(play, position)
+#include "Utils.hpp"
+
+Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position, b2World& world) : PhysicEntity(play, position)
 {
     //Duck vars
     state = MovementState_STANDING;
