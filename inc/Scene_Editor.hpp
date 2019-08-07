@@ -6,12 +6,6 @@
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 
-#include "imgui.h"
-#include "imguiSFML.h"
-
-#include "jute.hpp"
-
-#include "Utils.hpp"
 #include "Level.hpp"
 
 class Scene_Editor : public Scene

@@ -8,25 +8,26 @@
 Entity::Entity()
 {
     ID = 0;
-    CODE = 0x0000;
     haveSprite = false;
     haveAnimation = false;
     setPosition(ZEROVECTOR_F);
+    
+    CODE = 0x0000;
 }
 
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position) : play(play)
 {
     ID = play->getNextID();
-    CODE = 0x0000;
     haveSprite = false;
     haveAnimation = false;
     setPosition(position);
+    
+    CODE = 0x0000;
 }
 
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : play(play)
 {
     ID = play->getNextID();
-    CODE = 0x0000;
     haveSprite = true;
     haveAnimation = false;
     sprite.setTexture(texture);
@@ -34,6 +35,8 @@ Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture
     int textureSize = texture.getSize().y;
     sprite.setOrigin(sf::Vector2f(textureSize, textureSize) * 0.5f);
     setPosition(position);
+    
+    CODE = 0x0000;
 }
 
 Entity::~Entity() {}
@@ -132,6 +135,11 @@ bool Entity::operator<(const Entity& e) const
 unsigned int Entity::getID() const
 {
     return ID;
+}
+
+short Entity::getCode() const
+{
+    return CODE;
 }
 
 void Entity::setSprite(const sf::Texture& texture, const sf::IntRect& rect)

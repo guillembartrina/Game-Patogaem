@@ -13,6 +13,8 @@ GenericEntity::GenericEntity(Core core, Scene_Play* play, const sf::Vector2f& po
     {
         animate(rect.x / int(CELLSIZE.x), sf::seconds(0.1f));
     }
+
+    CODE = 0x0001;
 }
 
 GenericEntity::~GenericEntity() {}

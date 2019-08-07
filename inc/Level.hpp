@@ -24,17 +24,18 @@ class Level
   void setBackground(const std::string& background);
 
   void add(Coord coord, short code);
-  const std::set<short>& get(Coord coord) const;
+  bool isEmpty(Coord coord) const;
+  const std::set<unsigned short>& get(Coord coord) const;
   bool tryDel(Coord coord, short code);
 
-  //static void serialize();
-  //static void deserialize();
+  void serialize() const;
+  void deserialize(unsigned int index);
 
   private:
 
   std::string name;
   std::string background;
-  std::map<Coord, std::set<short>> items;
+  std::map<Coord, std::set<unsigned short>> items;
   std::vector<Coord> spawns;
 
 };

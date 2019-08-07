@@ -4,6 +4,13 @@
 #include <fstream>
 #include <string>
 
+#include "Utils.hpp"
+
+#include "imgui.h"
+#include "imguiSFML.h"
+
+#include "json.hpp"
+
 Scene_Editor::Scene_Editor(Core core)
 : Scene(core)
 {
@@ -14,7 +21,7 @@ Scene_Editor::Scene_Editor(Core core)
     strcpy(nameBuffer, "name");
     strcpy(backgroundBuffer, "background");
 
-    currentItem = -1;
+    currentItem = 0;
 
     loadLevelNames();
 }
@@ -80,10 +87,16 @@ void Scene_Editor::update(const sf::Time deltatime)
         {
             if(currentItem != -1)
             {
-                //deserializeLevel(currentItem);
+                level.deserialize(currentItem);
+
+                strcpy(nameBuffer, level.getName().c_str());
+                strcpy(backgroundBuffer, level.getBackground().c_str());
+
                 phase = true;
             }
         }
+        ImGui::SameLine(100.f);
+        if(ImGui::Button("DELETE")) {}
     }
     else
     {
@@ -94,7 +107,9 @@ void Scene_Editor::update(const sf::Time deltatime)
         ImGui::Separator();
         if(ImGui::Button("SAVE"))
         {
-          //serializeLevel();
+            level.setName(std::string(nameBuffer));
+            level.setBackground(std::string(backgroundBuffer));
+            level.serialize();
         }
     }
 
@@ -132,14 +147,15 @@ void Scene_Editor::resume() {}
 
 void Scene_Editor::loadLevelNames()
 {
-    fstream file("rsc/levels.json");
+    std::fstream file("rsc/levels.json", std::ios_base::in);
     std::string page = "", tmp;
     while(getline(file, tmp)) page += tmp;
     file.close();
 
-    jute::jValue data = jute::parser::parse(page);
+    json::JSON obj;
+    obj = json::Load(page);
 
-    levelNamesSize = data["Levels"].size();
+    levelNamesSize = obj["Levels"].length();
 
     if(levelNamesSize != 0)
     {
@@ -147,7 +163,7 @@ void Scene_Editor::loadLevelNames()
  
         for(unsigned int i = 0; i < levelNamesSize; i++)
         {
-            std::string tmp = data["Levels"][i]["name"].as_string();
+            std::string tmp = obj["Levels"][i]["name"].ToString();
             levelNames[i] = new char[tmp.length()+1];
             strcpy(levelNames[i], tmp.c_str());
         }

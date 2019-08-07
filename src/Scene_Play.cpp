@@ -4,11 +4,9 @@
 #include "imgui.h"
 #include "imguiSFML.h"
 
+#include "EntityCreator.hpp"
 #include "PhysicEntity.hpp"
-#include "GenericEntity.hpp"
-#include "GenericPhysicEntity.hpp"
 #include "TestPE.hpp"
-#include "Block.hpp"
 #include "Duck.hpp"
 
 Scene_Play::Scene_Play(Core core, std::string levelname)
@@ -155,10 +153,6 @@ void Scene_Play::draw(sf::RenderWindow& window) const
         window.draw(static_cast<Duck*>(duck)->getHB(0));
         window.draw(static_cast<Duck*>(duck)->getHB(1));
         window.draw(static_cast<Duck*>(duck)->getHB(2));
-        window.draw(static_cast<Duck*>(duck)->getHB(3));
-        window.draw(static_cast<Duck*>(duck)->getHB(4));
-        window.draw(static_cast<Duck*>(duck)->getHB(5));
-        window.draw(static_cast<Duck*>(duck)->getHB(6));
     }
 
     for(EntityHolder::const_iterator it = entities.begin(); it != entities.end(); it++)
@@ -214,17 +208,9 @@ void Scene_Play::loadLevel(Level* level)
     {
         for(int j = 0; j < NUMCELLS.y; j++)
         {
-            if(testmap[j][i] > 0 and testmap[j][i] <= 200)
+            if(testmap[j][i] != 0)
             {
-                //EntityHolder::iterator it = addEntity(new GenericPhysicEntity(core, this, cellToPixels(sf::Vector2u(i, j)), "ts_castle_w_c"));
-                char sides = 0x0F;
-                if(i-1 >= 0 and testmap[j][i-1] > 0 and testmap[j][i-1] <= 200) sides = sides & 0x0E;
-                if(i+1 < NUMCELLS.x and testmap[j][i+1] > 0 and testmap[j][i+1] <= 200) sides = sides & 0x0B;
-                if(j-1 >= 0 and testmap[j-1][i] > 0 and testmap[j-1][i] <= 200) sides = sides & 0x07;
-                if(j+1 < NUMCELLS.y and testmap[j+1][i] > 0 and testmap[j+1][i] <= 200) sides = sides & 0x0D;
-
-                EntityHolder::iterator it = addEntity(new Block(core, this, cellToPixels(sf::Vector2u(i, j)), sides));
-
+                EntityHolder::iterator it = addEntity(getEntitybyCode(EntityCode(testmap[j][i]), core, this, cellToPixels(sf::Vector2u(i, j))));
                 static_cast<PhysicEntity*>(it->second)->physicize(world);
             }
         }
@@ -238,13 +224,17 @@ void Scene_Play::imgui()
         bool open = true;
         ImGui::Begin("DEBUG", &open, ImVec2(200, 400));
 
+        ImGui::Separator();
+        ImGui::Text("State: ");
+        ImGui::SameLine();
+        ImGui::Text(MovementState_String[static_cast<Duck*>(duck)->getState()].c_str());
+        ImGui::Separator();
+
         if(ImGui::CollapsingHeader("HBs"))
         {
             ImGui::Checkbox("Duck HBs", &duckHBs);
             ImGui::Checkbox("Scene HBs", &sceneHBs);
         }
-
-        ImGui::Text(MovementState_String[static_cast<Duck*>(duck)->getState()].c_str());
 
         /*
         ImGui::PushItemWidth(70.f);
@@ -271,7 +261,7 @@ void Scene_Play::imgui()
         ImGui::RadioButton("D_B", &m, CollisionCategory_DYNAMIC_BACKGROUND);
         ImGui::EndChild();
         */
+
         ImGui::End();
-        //ImGui::ShowDemoWindow();
     }
 }

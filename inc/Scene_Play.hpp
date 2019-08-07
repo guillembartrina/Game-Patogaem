@@ -60,6 +60,8 @@ private:
 
     std::queue<unsigned int> toDelete;
 
+    Level level;
+
     //Functions
     sf::Vector2f cellToPixels(sf::Vector2u cell) const;
     void loadLevel(Level* level);
@@ -73,10 +75,6 @@ private:
     int m;
 
     void imgui();
-
-    //Test
-
-    Level level;
 };
 
 #endif

@@ -35,6 +35,7 @@ public:
     bool operator<(const Entity& e) const;
 
     unsigned int getID() const;
+    short getCode() const;
     
 protected:
 

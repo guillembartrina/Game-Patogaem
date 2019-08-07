@@ -11,6 +11,8 @@ PhysicEntity::PhysicEntity() : Entity()
     cc = CollisionCategory_NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
+
+    CODE = 0x8000;
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Entity(play, position)
@@ -20,6 +22,8 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Ent
     cc = CollisionCategory_NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
+
+    CODE = 0x8000;
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : Entity(play, position, texture, rect)
@@ -29,6 +33,8 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const
     cc = CollisionCategory_NO_COLLISION;
     durability = 0;
     bodyDef.type = b2BodyType::b2_staticBody;
+
+    CODE = 0x8000;
 }
 
 PhysicEntity::~PhysicEntity()
