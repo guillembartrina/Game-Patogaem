@@ -3,6 +3,8 @@
 
 #include "PhysicEntity.hpp"
 
+#include "SFML/Audio/Sound.hpp"
+
 enum MovementSide
 {
   MovementSide_RIGHT = 0,
@@ -22,15 +24,15 @@ class Duck : public PhysicEntity
 {
     public:
 
-    Duck(Core core, Scene_Play* play, const sf::Vector2f& position, b2World& world);
+    Duck(Core core, Scene_Play* play, const sf::Vector2f& position);
     ~Duck();
 
     void update(sf::Time deltatime) override;
 
     void handleEvents(const sf::Event& event);
 
-    void onCollision(int fixtureid, PhysicEntity* collided) override;
-    void onDecollision(int fixtureid, PhysicEntity* collided) override;
+    void onCollision(unsigned int fixtureid, PhysicEntity* collided) override;
+    void onDecollision(unsigned int fixtureid, PhysicEntity* collided) override;
 
     void changeState(MovementState newstate);
 
@@ -41,12 +43,12 @@ class Duck : public PhysicEntity
     MovementState state;
     MovementSide side;
 
-    int groundings, headings;
+    unsigned int groundings, headings;
 
     bool lc, rc, uc, dc;
     bool gr, hr;
 
-    b2Body* bodies[3]; //1:down, 2:floor, 0:others
+    sf::Sound quack;
 };
 
 #endif

@@ -122,6 +122,7 @@ void Level::serialize() const
 
     std::fstream fileout("rsc/levels.json", std::ios_base::out | std::ios_base::trunc);
     fileout << obj.dump();
+    fileout.close();
 }
 
 void Level::deserialize(unsigned int index)
@@ -149,4 +150,66 @@ void Level::deserialize(unsigned int index)
         }
     }
 
+}
+
+char** Level::getLevelNames(unsigned int& size)
+{
+    char** names;
+
+    std::fstream filein("rsc/levels.json", std::ios_base::in);
+    std::string page = "", tmp;
+    while(getline(filein, tmp)) page += tmp;
+    filein.close();
+
+    json::JSON obj;
+    obj = json::Load(page);
+
+    size = obj["Levels"].length();
+
+    if(size != 0)
+    {
+        names = new char*[size];
+        for(unsigned int i = 0; i < size; i++)
+        {
+            std::string tmp = obj["Levels"][i]["name"].ToString();
+            names[i] = new char[tmp.length()+1];
+            strcpy(names[i], tmp.c_str());
+        }
+    }
+
+    return names;
+}
+
+void Level::deleteLevel(unsigned int index)
+{
+    std::fstream filein("rsc/levels.json", std::ios_base::in);
+    std::string page = "", tmp;
+    while(getline(filein, tmp)) page += tmp;
+    filein.close();
+
+    json::JSON obj;
+    obj = json::Load(page);
+
+    unsigned int numLevels = obj["Levels"].length();
+
+    json::JSON levels[numLevels];
+
+    for(unsigned int i = 0 ; i < numLevels; i++)
+    {
+        levels[i] = obj["Levels"][i];
+    }
+
+    obj["Levels"] = json::Array();
+
+    for(unsigned int i = 0 ; i < numLevels; i++)
+    {
+        if(i != index)
+        {
+            obj["Levels"].append(levels[i]);
+        }
+    }
+
+    std::fstream fileout("rsc/levels.json", std::ios_base::out | std::ios_base::trunc);
+    fileout << obj.dump();
+    fileout.close();
 }

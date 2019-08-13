@@ -35,7 +35,8 @@ public:
     bool operator<(const Entity& e) const;
 
     unsigned int getID() const;
-    short getCode() const;
+    void setCODE(unsigned short code);
+    unsigned short getCODE() const;
     
 protected:
 
@@ -44,6 +45,13 @@ protected:
     bool haveSprite;
     sf::Sprite sprite;
 
+private:
+
+    Scene_Play* play;
+
+    unsigned int ID;
+    unsigned short CODE; //default: 0
+
     bool haveAnimation;
     bool playing;
     unsigned int numFrames;
@@ -51,14 +59,6 @@ protected:
 
     unsigned int currentFrame;
     sf::Time currentTime;
-
-    unsigned short CODE; //default: 0
-
-private:
-
-    Scene_Play* play;
-
-    unsigned int ID;
 
 };
 

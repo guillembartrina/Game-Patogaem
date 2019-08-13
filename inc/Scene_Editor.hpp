@@ -27,10 +27,7 @@ public:
 
     void resume();
 
-    void loadLevelNames();
-    
-    void deserializeLevel(int num);
-    void serializeLevel();
+    void reloadLevelNames();
 
 private:
 

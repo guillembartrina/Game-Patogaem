@@ -31,6 +31,9 @@ class Level
   void serialize() const;
   void deserialize(unsigned int index);
 
+  static char** getLevelNames(unsigned int& size);
+  static void deleteLevel(unsigned int index);
+
   private:
 
   std::string name;

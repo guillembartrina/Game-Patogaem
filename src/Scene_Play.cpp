@@ -19,7 +19,8 @@ Scene_Play::Scene_Play(Core core, std::string levelname)
     background.setPosition(0, 0);
     background.setSize(sf::Vector2f(core.window->getSize()));
 
-    duck = new Duck(core, this, sf::Vector2f(300, 700), world);
+    duck = new Duck(core, this, sf::Vector2f(300, 700));
+    static_cast<PhysicEntity*>(duck)->physicize(world);
 
     //TEST
     level.setName("testlevel");
@@ -86,9 +87,7 @@ void Scene_Play::handleEvents(const sf::Event& event)
                     break;
                 case sf::Keyboard::C:
                 {
-                    EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));
-
-                    static_cast<PhysicEntity*>(it->second)->physicize(world);       
+                    addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));    
                 }
                     break;
                 default:
@@ -188,6 +187,8 @@ unsigned int Scene_Play::getNextID()
 EntityHolder::iterator Scene_Play::addEntity(Entity* entity)
 {
     std::pair<EntityHolder::iterator, bool> it = entities.insert(std::make_pair(entity->getID(), entity));
+    if(isTarjet(it.first->second, IS_PHYSICENTITY)) static_cast<PhysicEntity*>(it.first->second)->physicize(world);
+
     return it.first;
 }
 
@@ -210,8 +211,7 @@ void Scene_Play::loadLevel(Level* level)
         {
             if(testmap[j][i] != 0)
             {
-                EntityHolder::iterator it = addEntity(getEntitybyCode(EntityCode(testmap[j][i]), core, this, cellToPixels(sf::Vector2u(i, j))));
-                static_cast<PhysicEntity*>(it->second)->physicize(world);
+                addEntity(getEntitybyCode(EntityCode(testmap[j][i]), core, this, cellToPixels(sf::Vector2u(i, j))));
             }
         }
     }

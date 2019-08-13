@@ -25,14 +25,14 @@ Block::Block(Core core, Scene_Play* play, const sf::Vector2f& position, unsigned
     
     setSprite(core.resources->Texture(types[type - 0xC000]), sf::IntRect(64 + ((sides & 0x08) >> 3) * 64 * 3, 0, 64, 64)); // change?
     
-    setBody(b2BodyType::b2_staticBody);
+    addBody(b2BodyType::b2_staticBody);
 
     for(int i = 0; i < 4; ++i)
     {
-        if(sides & (0x08 >> i)) addFixture(&edges[i], CollisionCategory_STATIC_FOREGROUND, 0.6f, 0.f, 1.f);
+        if(sides & (0x08 >> i)) addFixture(&edges[i], CollisionCategory_STATIC_FOREGROUND, 0.f, 0.f, 1.f);
     }
 
-    CODE = type;
+    setCODE(type);
 }
 
 Block::~Block() {}

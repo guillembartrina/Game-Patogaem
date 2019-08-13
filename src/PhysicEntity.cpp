@@ -6,105 +6,98 @@
 
 PhysicEntity::PhysicEntity() : Entity()
 {
-    physics = false;
-    physicized = false;
-    cc = CollisionCategory_NO_COLLISION;
-    durability = 0;
-    bodyDef.type = b2BodyType::b2_staticBody;
+   physicized = false;
+   numBodies = 0;
 
-    CODE = 0x8000;
+   setCODE(0x8000);
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Entity(play, position)
 {
-    physics = false;
     physicized = false;
-    cc = CollisionCategory_NO_COLLISION;
-    durability = 0;
-    bodyDef.type = b2BodyType::b2_staticBody;
+    numBodies = 0;
 
-    CODE = 0x8000;
+    setCODE(0x8000);
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : Entity(play, position, texture, rect)
 {
-    physics = false;
     physicized = false;
-    cc = CollisionCategory_NO_COLLISION;
-    durability = 0;
-    bodyDef.type = b2BodyType::b2_staticBody;
+    numBodies = 0;
 
-    CODE = 0x8000;
+    setCODE(0x8000);
 }
 
 PhysicEntity::~PhysicEntity()
 {
-    if(physicized)
-    {
-        body->GetWorld()->DestroyBody(body);
-    }
+   if(physicized)
+   {
+       b2World* world = bodies[0]->GetWorld();
 
-    if(physics)
-    {
-        for(int i = 0; i < fixtureDef.size(); i++)
-        {
-            delete fixtureDef[i].shape;
-        }
-    }
+       for(unsigned int i = 0; i < numBodies; i++)
+       {
+           world->DestroyBody(bodies[i]);
+       }
+
+       delete[] bodies;
+   }
 }
 
 b2Body* PhysicEntity::physicize(b2World& world)
 {
-    if(physics)
+    assert(numBodies > 0);
+
+    if(physicized)
     {
-        bodyDef.position = metrize(tob2Vec2(getPosition()));
-        body = world.CreateBody(&bodyDef);
-
-        for(int i = 0; i < fixtureDef.size(); i++)
-        {
-            b2Fixture* tmp = body->CreateFixture(&fixtureDef[i]);
-            tmp->SetUserData((void*)i);
-        }
-
-        if(fixtureDef.size() == 1) //If only one fixture-> simple entity, needs a collision sensor
-        {
-            fixtureDef[0].filter = getCollisionFilter(CollisionCategory_ALL_COLLISION);
-            fixtureDef[0].isSensor = true;
-            body->CreateFixture(&fixtureDef[0]);
-        }
-
-        body->SetUserData(this);
-        physicized = true;
-
+        printInfo("Already physicized!");
         return body;
     }
 
-    return nullptr;
+    bodies = new b2Body*[numBodies];
+
+    for(unsigned int i = 0; i < numBodies; i++)
+    {
+        bodyDefs[i]->bodyDef.position = metrize(tob2Vec2(getPosition()));
+        bodies[i] = world.CreateBody(&bodyDefs[i]->bodyDef);
+
+        for(unsigned int j = 0; j < bodyDefs[i]->fixtureDef.size(); j++)
+        {
+            b2Fixture* tmp = bodies[i]->CreateFixture(&bodyDefs[i]->fixtureDef[j]);
+            tmp->SetUserData((void*)j);
+        }
+
+        bodies[i]->SetUserData(this);
+        bodies[i]->SetActive(false);
+
+        delete bodyDefs[i];
+    }
+
+    delete[] bodyDefs;
+    physicized = true;
+
+    bodies[0]->SetActive(true);
+    body = bodies[0];
+
+    return body;
 }
 
 void PhysicEntity::setPosition(const sf::Vector2f& position)
 {
-    if(physicized)
-    {
-        body->SetTransform(tob2Vec2(metrize(position)), body->GetAngle());
-    }
+    body->SetTransform(tob2Vec2(metrize(position)), body->GetAngle());
 
     Entity::setPosition(position);
 }
 
 void PhysicEntity::setRotation(float angle)
 {
-    if(physicized)
-    {
-        body->SetTransform(body->GetPosition(), -1*radize(angle)); //!!
-    }
+    body->SetTransform(body->GetPosition(), -1*radize(angle)); //!!
 
     Entity::setRotation(angle);
 }
 
 void PhysicEntity::update(const sf::Time deltatime)
 {
-    if(physicized and body->IsAwake())
+    if(body->IsAwake())
     {
         Entity::setPosition(pixelize(toVector2f(body->GetPosition())));
         if(not body->IsFixedRotation()) Entity::setRotation(anglize(body->GetAngle()));
@@ -113,20 +106,22 @@ void PhysicEntity::update(const sf::Time deltatime)
     Entity::update(deltatime);
 }
 
-void PhysicEntity::onCollision(int fixtureid, PhysicEntity* collided) {}
+void PhysicEntity::onCollision(unsigned int fixtureid, PhysicEntity* collided) {}
 
-void PhysicEntity::onDecollision(int fixtureid, PhysicEntity* collided) {}
+void PhysicEntity::onDecollision(unsigned int fixtureid, PhysicEntity* collided) {}
 
 //void PhysicEntity::onReduceDurability() {}
 
+/*
 CollisionCategory PhysicEntity::getCC() const
 {
-    return cc;
+    return CollisionCategory_ALL_COLLISION;
 }
+*/
 
 sf::RectangleShape PhysicEntity::getHB(unsigned int num) const
 {
-    sf::RectangleShape hb = sf::RectangleShape();
+    sf::RectangleShape hb;
 
     hb.setFillColor(sf::Color::Transparent);
     hb.setOutlineColor(sf::Color::Magenta);
@@ -149,17 +144,33 @@ sf::RectangleShape PhysicEntity::getHB(unsigned int num) const
     return hb;
 }
 
-void PhysicEntity::setBody(b2BodyType type, bool rotation)
+void PhysicEntity::addBody(b2BodyType type, bool fixedrotation)
 {
-    bodyDef.type = type;
-    bodyDef.fixedRotation = rotation;
+    numBodies++;
+
+    BodyDef** tmp = new BodyDef*[numBodies];
+
+    if(numBodies > 1)
+    {
+        memcpy(tmp, bodyDefs, sizeof(BodyDef*) * (numBodies - 1));
+        delete[] bodyDefs;
+    }
+    
+    bodyDefs = tmp;
+
+    bodyDefs[numBodies - 1] = new BodyDef();
+    b2BodyDef& current = bodyDefs[numBodies - 1]->bodyDef;
+    current.type = type;
+    current.fixedRotation = fixedrotation;
 }
 
 void PhysicEntity::addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor)
 {
-    fixtureDef.push_back(b2FixtureDef());
+    assert(numBodies > 0);
 
-    b2FixtureDef& current = fixtureDef.back();
+    bodyDefs[numBodies - 1]->fixtureDef.push_back(b2FixtureDef());
+
+    b2FixtureDef& current = bodyDefs[numBodies - 1]->fixtureDef.back();
 
     current.shape = shape;
     current.friction = friction;
@@ -167,21 +178,22 @@ void PhysicEntity::addFixture(const b2Shape* shape, CollisionCategory category, 
     current.density = density;
     current.filter = getCollisionFilter(category);
     current.isSensor = sensor;
-
-    cc = category;
-
-    physics = true;
 }
 
-void PhysicEntity::resetPhysics()
+void PhysicEntity::setBody(unsigned int num, bool sametransform)
 {
-    for(int i = 0; i < fixtureDef.size(); i++)
+    assert(num >= 0 and num < numBodies);
+
+    b2Vec2 pos = body->GetPosition();
+    b2Vec2 vel = body->GetLinearVelocity();
+
+    body->SetActive(false);
+    body = bodies[num];
+    body->SetActive(true);
+
+    if(sametransform)
     {
-        delete fixtureDef[i].shape;
+        body->SetTransform(pos, 0.f);
+        body->SetLinearVelocity(vel);
     }
-
-    fixtureDef.clear();
-
-    physics = false;
-    physicized = false;
 }

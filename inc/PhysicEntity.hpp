@@ -54,6 +54,12 @@ static b2Filter getCollisionFilter(CollisionCategory cc)
     return filter;
 }
 
+struct BodyDef
+{
+    b2BodyDef bodyDef;
+    std::vector<b2FixtureDef> fixtureDef;
+};
+
 class PhysicEntity : public Entity
 {
 public:
@@ -71,35 +77,37 @@ public:
     b2Body* physicize(b2World& world);
 
     //virtual void onPrecollision(int fixtureid, PhysicEntity* collided);
-    virtual void onCollision(int fixtureid, PhysicEntity* collided);
-    virtual void onDecollision(int fixtureid, PhysicEntity* collided);
+    virtual void onCollision(unsigned int fixtureid, PhysicEntity* collided);
+    virtual void onDecollision(unsigned int fixtureid, PhysicEntity* collided);
     
     //virtual void onReduceDurability();
 
-    CollisionCategory getCC() const;
-
+    //CollisionCategory getCC() const;
     sf::RectangleShape getHB(unsigned int num = 0) const;
 
 protected:
 
-    b2Body* body;
+    b2Body* body; //active body
 
-    void setBody(b2BodyType type, bool rotation = false);
-    void addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor = false);
+    void addBody(b2BodyType type, bool fixedrotation = false);
+    void addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor = false); //needs a body
 
-    void resetPhysics();
+    void setBody(unsigned int num, bool sametransform = true);
 
 private:
 
     bool physicized;
 
-    bool physics;
-    b2BodyDef bodyDef;
-    std::vector<b2FixtureDef> fixtureDef;
+    unsigned int numBodies;
+    b2Body** bodies;
 
+    BodyDef** bodyDefs;
+
+    /*
     CollisionCategory cc;
+    */
     
-    unsigned int durability;
+    //unsigned int durability;
 };
 
 #endif

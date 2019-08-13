@@ -137,7 +137,12 @@ unsigned int Entity::getID() const
     return ID;
 }
 
-short Entity::getCode() const
+void Entity::setCODE(unsigned short code)
+{
+    CODE = code;
+}
+
+unsigned short Entity::getCODE() const
 {
     return CODE;
 }

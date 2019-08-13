@@ -54,7 +54,7 @@ typedef std::pair<unsigned short, unsigned short> Codepair; //code + mask
 
 static bool isTarjet(const Entity* entity, const Codepair& codepair)
 {
-    return (((entity->getCode() & codepair.second) ^ codepair.first) == 0x0000);
+    return (((entity->getCODE() & codepair.second) ^ codepair.first) == 0x0000);
 };
 
 static const Codepair IS_ENTITY = std::make_pair(ENTITY, 0x0000); //XXXX XXXX XXXX XXXX
