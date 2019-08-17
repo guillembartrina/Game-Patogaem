@@ -2,12 +2,28 @@
 #include "Object.hpp"
 
 #include "Utils.hpp"
+#include "EntityCreator.hpp"
 
-Object::Object() {}
+Object::Object()
+{
+    active = false;
 
-Object::Object(Scene_Play* play, const sf::Vector2f& position) : PhysicEntity(play, position) {}
+    setCODE(OBJECT);
+}
 
-Object::Object(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : PhysicEntity(play, position, texture, rect) {}
+Object::Object(Scene_Play* play, const sf::Vector2f& position) : PhysicEntity(play, position)
+{
+    active = false;
+
+    setCODE(OBJECT);
+}
+
+Object::Object(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : PhysicEntity(play, position, texture, rect)
+{
+    active = false;
+    
+    setCODE(OBJECT);
+}
 
 Object::~Object() {}
 
@@ -40,6 +56,11 @@ void Object::startTimer(sf::Time time)
     {
         printInfo(getID() <<  " : TRYING TO ACTIVATE TIMER WHEN ALTERADY ACTIVE");
     }
+}
+
+bool Object::timerActive() const
+{
+    return active;
 }
 
 void Object::onTimerTrigger() {}

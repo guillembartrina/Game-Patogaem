@@ -16,17 +16,18 @@ class Object : public PhysicEntity
     virtual void update(const sf::Time deltatime) override;
     
     virtual void action();
-    void startTimer(sf::Time time);
-    virtual void onTimerTrigger();
 
     protected:
 
+    void startTimer(sf::Time time);
+    bool timerActive() const;
+    virtual void onTimerTrigger();
+    
     private:
 
     bool active;
     sf::Time currentTime;
     sf::Time triggerTime;
-
 };
 
 #endif

@@ -87,7 +87,7 @@ void Scene_Play::handleEvents(const sf::Event& event)
                     break;
                 case sf::Keyboard::C:
                 {
-                    addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));    
+                    //addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));    
                 }
                     break;
                 default:
@@ -113,16 +113,16 @@ void Scene_Play::update(const sf::Time deltatime)
     sf::Vector2f movingBounds = sf::Vector2f(core.window->getSize()) * 0.2f;;
 
     if(duckPosToView.x > movingBounds.x) view.move(sf::Vector2f(duckPosToView.x - movingBounds.x, 0.f));
-    if(duckPosToView.x < -movingBounds.x) view.move(sf::Vector2f(duckPosToView.x + movingBounds.x, 0.f));
+    else if(duckPosToView.x < -movingBounds.x) view.move(sf::Vector2f(duckPosToView.x + movingBounds.x, 0.f));
     if(duckPosToView.y > movingBounds.y) view.move(sf::Vector2f(0.f, duckPosToView.y - movingBounds.y));
-    if(duckPosToView.y < -movingBounds.y) view.move(sf::Vector2f(0.f, duckPosToView.y + movingBounds.y));
+    else if(duckPosToView.y < -movingBounds.y) view.move(sf::Vector2f(0.f, duckPosToView.y + movingBounds.y));
 
     //--------------
 
     core.window->setView(view);
     background.setPosition(view.getCenter() - view.getSize() / 2.f);
 
-    world.Step(deltatime.asSeconds(), 2, 2);
+    world.Step(deltatime.asSeconds(), 4, 4);
 
     duck->update(deltatime);
 
@@ -145,14 +145,14 @@ void Scene_Play::draw(sf::RenderWindow& window) const
 {
     window.draw(background);
 
-    window.draw(*duck);
-
     if(duckHBs)
     {
         window.draw(static_cast<Duck*>(duck)->getHB(0));
         window.draw(static_cast<Duck*>(duck)->getHB(1));
         window.draw(static_cast<Duck*>(duck)->getHB(2));
     }
+
+    window.draw(*duck);
 
     for(EntityHolder::const_iterator it = entities.begin(); it != entities.end(); it++)
     {

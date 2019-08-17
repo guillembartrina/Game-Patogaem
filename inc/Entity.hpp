@@ -18,11 +18,6 @@ public:
     Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect);
     ~Entity();
 
-    void animate(unsigned int numFrames, const sf::Time& frameTime);
-    void setAnimationFrame(unsigned int frameNum);
-    void playAnimation();
-    void stopAnimation();
-
     void setPosition(const sf::Vector2f& position);
     void setOrigin(const sf::Vector2f& origin);
     void setRotation(float angle);
@@ -35,15 +30,19 @@ public:
     bool operator<(const Entity& e) const;
 
     unsigned int getID() const;
-    void setCODE(unsigned short code);
     unsigned short getCODE() const;
     
 protected:
 
-    void setSprite(const sf::Texture& texture, const sf::IntRect& rect);
+    void animate(unsigned int numFrames, const sf::Time& frameTime, bool loop = true);
+    void setAnimationFrame(unsigned int frameNum);
+    void playAnimation();
+    void stopAnimation();
 
-    bool haveSprite;
-    sf::Sprite sprite;
+    void setCODE(unsigned short code);
+    void setSprite(const sf::Texture& texture, const sf::IntRect& rect);
+    void setSpriteRect(unsigned int index);
+    sf::IntRect getSpriteRect() const;
 
 private:
 
@@ -52,8 +51,12 @@ private:
     unsigned int ID;
     unsigned short CODE; //default: 0
 
+    bool haveSprite;
+    sf::Sprite sprite;
+    
     bool haveAnimation;
     bool playing;
+    bool loop;
     unsigned int numFrames;
     sf::Time frameTime;
 

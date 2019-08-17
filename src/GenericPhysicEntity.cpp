@@ -2,6 +2,7 @@
 #include "GenericPhysicEntity.hpp"
 
 #include "Utils.hpp"
+#include "EntityCreator.hpp"
 
 GenericPhysicEntity::GenericPhysicEntity(Core core, Scene_Play* play, const sf::Vector2f& position, std::string name) : PhysicEntity(play, position)
 {
@@ -17,7 +18,7 @@ GenericPhysicEntity::GenericPhysicEntity(Core core, Scene_Play* play, const sf::
     setBody(b2BodyType::b2_staticBody);
     addFixture(createRectangle(tob2Vec2(CELLSIZE)), CollisionCategory_STATIC_FOREGROUND, 0.2f, 0.f, 1.f);
 
-    setCODE(0x8001);
+    setCODE(GENERICPHYSICENTITY);
 }
 
 GenericPhysicEntity::~GenericPhysicEntity() {}

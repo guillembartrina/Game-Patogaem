@@ -41,44 +41,6 @@ Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture
 
 Entity::~Entity() {}
 
-void Entity::animate(unsigned int numFrames, const sf::Time& frameTime)
-{
-    if(haveSprite)
-    {
-        this->numFrames = numFrames;
-        this->frameTime = frameTime;
-
-        currentFrame = 0;
-        currentTime = sf::Time::Zero;
-
-        haveAnimation = true;
-        playing = true;
-    }
-}
-
-void Entity::setAnimationFrame(unsigned int frameNum)
-{
-    if(haveAnimation and frameNum < numFrames)
-    {
-        currentFrame = frameNum;
-
-        sf::IntRect rect = sprite.getTextureRect();
-        sprite.setTextureRect(sf::IntRect(sf::Vector2i(currentFrame * rect.width, 0), sf::Vector2i(rect.width, rect.height)));
-
-        currentTime = sf::Time::Zero;
-    }
-}
-
-void Entity::playAnimation()
-{
-    if(haveAnimation) playing = true;
-}
-
-void Entity::stopAnimation()
-{
-    if(haveAnimation) playing = false;
-}
-
 void Entity::setPosition(const sf::Vector2f& position)
 {
     Transformable::setPosition(position);
@@ -108,11 +70,18 @@ void Entity::update(const sf::Time deltatime)
             currentFrame++;
             currentFrame %= numFrames;
 
-            sf::IntRect rect = sprite.getTextureRect();
-            rect.left = rect.width * currentFrame;
-            sprite.setTextureRect(rect);
+            if(not loop and currentFrame == 0)
+            {
+                playing = false;
+            }
+            else
+            {
+                sf::IntRect rect = sprite.getTextureRect();
+                rect.left = rect.width * currentFrame;
+                sprite.setTextureRect(rect);
 
-            currentTime -= frameTime;
+                currentTime -= frameTime;
+            }
         }
     }
 }
@@ -137,14 +106,57 @@ unsigned int Entity::getID() const
     return ID;
 }
 
-void Entity::setCODE(unsigned short code)
-{
-    CODE = code;
-}
-
 unsigned short Entity::getCODE() const
 {
     return CODE;
+}
+
+void Entity::animate(unsigned int numFrames, const sf::Time& frameTime, bool loop)
+{
+    if(haveSprite)
+    {
+        this->numFrames = numFrames;
+        this->frameTime = frameTime;
+        this->loop = loop;
+
+        currentFrame = 0;
+        currentTime = sf::Time::Zero;
+
+        haveAnimation = true;
+        playing = true;
+    }
+}
+
+void Entity::setAnimationFrame(unsigned int frameNum)
+{
+    if(haveAnimation and frameNum < numFrames)
+    {
+        currentFrame = frameNum;
+
+        sf::IntRect rect = sprite.getTextureRect();
+        sprite.setTextureRect(sf::IntRect(sf::Vector2i(currentFrame * rect.width, 0), sf::Vector2i(rect.width, rect.height)));
+
+        currentTime = sf::Time::Zero;
+    }
+}
+
+void Entity::playAnimation()
+{
+    if(haveAnimation) playing = true;
+}
+
+void Entity::stopAnimation()
+{
+    if(haveAnimation)
+    {
+        setAnimationFrame(0);
+        playing = false;
+    }
+}
+
+void Entity::setCODE(unsigned short code)
+{
+    CODE = code;
 }
 
 void Entity::setSprite(const sf::Texture& texture, const sf::IntRect& rect)
@@ -154,4 +166,16 @@ void Entity::setSprite(const sf::Texture& texture, const sf::IntRect& rect)
     sprite.setOrigin(sf::Vector2f(rect.width, rect.height) * 0.5f);
     setPosition(getPosition());
     haveSprite = true;
+}
+
+void Entity::setSpriteRect(unsigned int index)
+{
+    sf::IntRect rect = sprite.getTextureRect();
+
+    sprite.setTextureRect(sf::IntRect(sf::Vector2i(0, rect.height*index), sf::Vector2i(rect.width, rect.height)));
+}
+
+sf::IntRect Entity::getSpriteRect() const
+{
+    return sprite.getTextureRect();
 }

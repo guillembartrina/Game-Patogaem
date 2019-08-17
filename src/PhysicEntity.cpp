@@ -3,13 +3,14 @@
 
 #include "Utils.hpp"
 #include "Utils_Box2D.hpp"
+#include "EntityCreator.hpp"
 
 PhysicEntity::PhysicEntity() : Entity()
 {
    physicized = false;
    numBodies = 0;
 
-   setCODE(0x8000);
+   setCODE(PHYSICENTITY);
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Entity(play, position)
@@ -17,7 +18,7 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position) : Ent
     physicized = false;
     numBodies = 0;
 
-    setCODE(0x8000);
+    setCODE(PHYSICENTITY);
 }
 
 PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : Entity(play, position, texture, rect)
@@ -25,7 +26,7 @@ PhysicEntity::PhysicEntity(Scene_Play* play, const sf::Vector2f& position, const
     physicized = false;
     numBodies = 0;
 
-    setCODE(0x8000);
+    setCODE(PHYSICENTITY);
 }
 
 PhysicEntity::~PhysicEntity()
@@ -83,6 +84,8 @@ b2Body* PhysicEntity::physicize(b2World& world)
 
 void PhysicEntity::setPosition(const sf::Vector2f& position)
 {
+    assert(physicized);
+
     body->SetTransform(tob2Vec2(metrize(position)), body->GetAngle());
 
     Entity::setPosition(position);
@@ -90,6 +93,8 @@ void PhysicEntity::setPosition(const sf::Vector2f& position)
 
 void PhysicEntity::setRotation(float angle)
 {
+    assert(physicized);
+    
     body->SetTransform(body->GetPosition(), -1*radize(angle)); //!!
 
     Entity::setRotation(angle);
@@ -105,6 +110,8 @@ void PhysicEntity::update(const sf::Time deltatime)
 
     Entity::update(deltatime);
 }
+
+void PhysicEntity::onPrecollision(unsigned int fixtureid, PhysicEntity* collided, b2Contact* contact) {}
 
 void PhysicEntity::onCollision(unsigned int fixtureid, PhysicEntity* collided) {}
 

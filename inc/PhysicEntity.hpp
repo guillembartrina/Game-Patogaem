@@ -76,7 +76,7 @@ public:
 
     b2Body* physicize(b2World& world);
 
-    //virtual void onPrecollision(int fixtureid, PhysicEntity* collided);
+    virtual void onPrecollision(unsigned int fixtureid, PhysicEntity* collided, b2Contact* contact);
     virtual void onCollision(unsigned int fixtureid, PhysicEntity* collided);
     virtual void onDecollision(unsigned int fixtureid, PhysicEntity* collided);
     

@@ -50,6 +50,9 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
 
     //create vectors with coefs and velocities to not HARD CODE!!!!!!!!!!!!!!!
     //clean code and calls to body, swithes,...
+    //fix jump while falling from a place without jumpoing
+
+    setCODE(DUCK);
 }
 
 Duck::~Duck() {}
@@ -85,7 +88,7 @@ void Duck::update(const sf::Time deltatime)
         if(state == MovementState_FLYING) idealVel *= 0.6;
         float impulse = body->GetMass() * (idealVel - currentVel.x);
         body->ApplyLinearImpulse(b2Vec2(impulse, 0), body->GetWorldCenter(), true);
-        playAnimation();
+        //playAnimation();
     }
     else
     {
@@ -102,16 +105,8 @@ void Duck::update(const sf::Time deltatime)
         else
         {
             body->SetLinearVelocity(b2Vec2(0.f, currentVel.y));
-
-            if(state == MovementState_FLOORING)
-            {
-                if(not headings)
-                {
-                    changeState(MovementState_STANDING);
-                }
-            }
         }
-        stopAnimation();
+        //stopAnimation();
     }
 
     if(state == MovementState_FLYING and body->GetLinearVelocity().y > 0.f)
@@ -280,7 +275,7 @@ void Duck::handleEvents(const sf::Event& event)
             break;
     }
 
-    sprite.setTextureRect(sf::IntRect(0, (sprite.getTextureRect().top/256)*256+side*128, 64, 128));
+    setSpriteRect((getSpriteRect().top/256)*2+side);
 }
 
 void Duck::onCollision(unsigned int fixtureid, PhysicEntity* collided)
@@ -357,8 +352,7 @@ void Duck::changeState(MovementState newstate)
             if(state == MovementState_DOWNING or state == MovementState_FLOORING)
             {
                 setBody(0);
-
-                sprite.setTextureRect(sf::IntRect(0, 0*256+side*128, 64, 128));
+                setSpriteRect(0+side);
             }
         }
             break;
@@ -367,8 +361,7 @@ void Duck::changeState(MovementState newstate)
             if(state != MovementState_DOWNING)
             {
                 setBody(1);
-
-                sprite.setTextureRect(sf::IntRect(0, 1*256+side*128, 64, 128));
+                setSpriteRect(2+side);
             }
         }
             break;
@@ -377,8 +370,7 @@ void Duck::changeState(MovementState newstate)
             if(state != MovementState_FLOORING)
             {
                 setBody(2);
-
-                sprite.setTextureRect(sf::IntRect(0, 2*256+side*128, 64, 128));
+                setSpriteRect(4+side);
             }
         }
             break;

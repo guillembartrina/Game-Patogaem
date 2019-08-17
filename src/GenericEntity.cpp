@@ -2,6 +2,7 @@
 #include "GenericEntity.hpp"
 
 #include "Utils.hpp"
+#include "EntityCreator.hpp"
 
 GenericEntity::GenericEntity(Core core, Scene_Play* play, const sf::Vector2f& position, std::string name) : Entity(play, position)
 {
@@ -14,7 +15,7 @@ GenericEntity::GenericEntity(Core core, Scene_Play* play, const sf::Vector2f& po
         animate(rect.x / int(CELLSIZE.x), sf::seconds(0.1f));
     }
 
-    setCODE(0x0001);
+    setCODE(GENERICENTITY);
 }
 
 GenericEntity::~GenericEntity() {}

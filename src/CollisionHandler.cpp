@@ -8,27 +8,28 @@ CollisionHandler::CollisionHandler() {}
 
 CollisionHandler::~CollisionHandler() {}
 
-/*
 void CollisionHandler::PreSolve(b2Contact* contact, const b2Manifold *oldManifold)
 {
-    void* userDataA = contact->GetFixtureA()->GetBody()->GetUserData();
-    void* userDataB = contact->GetFixtureB()->GetBody()->GetUserData();
+    b2Fixture* fixtureA = contact->GetFixtureA();
+    b2Fixture* fixtureB = contact->GetFixtureB();
 
-    if(contact->GetFixtureA()->IsSensor())
+    void* userDataA = fixtureA->GetBody()->GetUserData();
+    void* userDataB = fixtureB->GetBody()->GetUserData();
+
+    if(not fixtureA->IsSensor() and not fixtureB->IsSensor())
     {
-        printInfo("Sensor of <" << static_cast<Entity*>(userDataA)->getID() << "> colliding with <" << static_cast<Entity*>(userDataB)->getID() << ">");
+        printInfo("Sensor of <" << static_cast<Entity*>(userDataA)->getID() << "> precolliding with <" << static_cast<Entity*>(userDataB)->getID() << ">");
 
-        static_cast<PhysicEntity*>(userDataA)->onPrecollision((int)(intptr_t)contact->GetFixtureA()->GetUserData(), static_cast<PhysicEntity*>(userDataB));
+        static_cast<PhysicEntity*>(userDataA)->onPrecollision((unsigned int)(intptr_t)fixtureA->GetUserData(), static_cast<PhysicEntity*>(userDataB), contact);
     }
 
-    if(contact->GetFixtureB()->IsSensor())
+    if(not fixtureA->IsSensor() and not fixtureB->IsSensor())
     {
-        printInfo("Sensor of <" << static_cast<Entity*>(userDataB)->getID() << "> colliding with <" << static_cast<Entity*>(userDataA)->getID() << ">");
+        printInfo("Sensor of <" << static_cast<Entity*>(userDataB)->getID() << "> precolliding with <" << static_cast<Entity*>(userDataA)->getID() << ">");
 
-        static_cast<PhysicEntity*>(userDataB)->onPrecollision((int)(intptr_t)contact->GetFixtureB()->GetUserData(), static_cast<PhysicEntity*>(userDataA));
+        static_cast<PhysicEntity*>(userDataB)->onPrecollision((unsigned int)(intptr_t)fixtureB->GetUserData(), static_cast<PhysicEntity*>(userDataA), contact);
     }
 }
-*/
 
 void CollisionHandler::BeginContact(b2Contact* contact)
 {
