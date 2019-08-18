@@ -24,7 +24,7 @@ Block::Block(Core core, Scene_Play* play, const sf::Vector2f& position, unsigned
     if(j-1 >= 0 and testmap[j-1][i] == BLOCK_BLUECASTLE) sides = sides & 0x07; //0000 X111
     if(j+1 < NUMCELLS.y and testmap[j+1][i] == BLOCK_BLUECASTLE) sides = sides & 0x0D; //0000 11X1
     
-    setSprite(core.resources->Texture(types[type - BLOCK]), sf::IntRect(64 + ((sides & 0x08) >> 3) * 64 * 3, 0, 64, 64)); // change?
+    setSprite(core.resources->Texture(types[type - BLOCK]), sf::IntRect(CELLSIZE.x + ((sides & 0x08) >> 3) * CELLSIZE.x * 3, 0, CELLSIZE.x, CELLSIZE.y)); // change?
     
     addBody(b2BodyType::b2_staticBody);
 

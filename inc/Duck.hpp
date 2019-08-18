@@ -2,6 +2,7 @@
 #define DUCK_HPP
 
 #include "PhysicEntity.hpp"
+#include "Holdable.hpp"
 
 #include "SFML/Audio/Sound.hpp"
 
@@ -22,33 +23,38 @@ enum MovementState
 
 class Duck : public PhysicEntity
 {
-    public:
+  public:
 
-    Duck(Core core, Scene_Play* play, const sf::Vector2f& position);
-    ~Duck();
+  Duck(Core core, Scene_Play* play, const sf::Vector2f& position);
+  ~Duck();
 
-    void update(sf::Time deltatime) override;
+  void update(sf::Time deltatime) override;
 
-    void handleEvents(const sf::Event& event);
+  void handleEvents(const sf::Event& event);
 
-    void onCollision(unsigned int fixtureid, PhysicEntity* collided) override;
-    void onDecollision(unsigned int fixtureid, PhysicEntity* collided) override;
+  void onCollision(unsigned int fixtureid, PhysicEntity* collided) override;
+  void onDecollision(unsigned int fixtureid, PhysicEntity* collided) override;
 
-    void changeState(MovementState newstate);
+  void changeState(MovementState newstate);
 
-    MovementState getState() const;
+  MovementState getState() const;
 
-    private:
+  private:
 
-    MovementState state;
-    MovementSide side;
+  MovementState state;
+  MovementSide side;
 
-    unsigned int groundings, headings;
+  Holdable* holdable;
 
-    bool lc, rc, uc, dc;
-    bool gr, hr;
+  unsigned int groundings, headings;
 
-    sf::Sound quack;
+  bool pL, pR, pU, pD; //pressed arrows
+  bool go, gz, hz;
+
+  sf::Sound quack;
+
+  static const float stateValues[5];
+  static const float stateCoefs[5]; 
 };
 
 #endif

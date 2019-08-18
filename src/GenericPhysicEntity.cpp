@@ -16,7 +16,7 @@ GenericPhysicEntity::GenericPhysicEntity(Core core, Scene_Play* play, const sf::
     }
 
     setBody(b2BodyType::b2_staticBody);
-    addFixture(createRectangle(tob2Vec2(CELLSIZE)), CollisionCategory_STATIC_FOREGROUND, 0.2f, 0.f, 1.f);
+    addFixture(createRectangle(tob2Vec2(CELLSIZE)), CollisionCategory_STATIC_FOREGROUND, 0.f, 0.f, 1.f);
 
     setCODE(GENERICPHYSICENTITY);
 }

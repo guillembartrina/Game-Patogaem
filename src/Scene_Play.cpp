@@ -19,7 +19,7 @@ Scene_Play::Scene_Play(Core core, std::string levelname)
     background.setPosition(0, 0);
     background.setSize(sf::Vector2f(core.window->getSize()));
 
-    duck = new Duck(core, this, sf::Vector2f(300, 700));
+    duck = new Duck(core, this, sf::Vector2f(300, 900));
     static_cast<PhysicEntity*>(duck)->physicize(world);
 
     //TEST
@@ -145,15 +145,6 @@ void Scene_Play::draw(sf::RenderWindow& window) const
 {
     window.draw(background);
 
-    if(duckHBs)
-    {
-        window.draw(static_cast<Duck*>(duck)->getHB(0));
-        window.draw(static_cast<Duck*>(duck)->getHB(1));
-        window.draw(static_cast<Duck*>(duck)->getHB(2));
-    }
-
-    window.draw(*duck);
-
     for(EntityHolder::const_iterator it = entities.begin(); it != entities.end(); it++)
     {
         window.draw(*it->second);
@@ -161,6 +152,15 @@ void Scene_Play::draw(sf::RenderWindow& window) const
         {
             for(int i = 0; i < 4; i++) window.draw(static_cast<PhysicEntity*>(it->second)->getHB(i));
         }
+    }
+
+    window.draw(*duck);
+
+    if(duckHBs)
+    {
+        window.draw(static_cast<Duck*>(duck)->getHB(0));
+        window.draw(static_cast<Duck*>(duck)->getHB(1));
+        window.draw(static_cast<Duck*>(duck)->getHB(2));
     }
 }
 

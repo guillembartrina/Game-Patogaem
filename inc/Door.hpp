@@ -4,6 +4,15 @@
 
 #include "Object.hpp"
 
+#include "SFML/Audio/Sound.hpp"
+
+enum DoorSpriteRect
+{
+    DoorSpriteRect_CLOSED = 0,
+    DoorSpriteRect_LEFT,
+    DoorSpriteRect_RIGHT
+};
+
 class Door : public Object
 {
     public:
@@ -23,7 +32,9 @@ class Door : public Object
 
     static const sf::Time closeTime;
 
-    int nl, nr;
+    int leftings, rightings;
+
+    sf::Sound open, close;
 
 };
 
