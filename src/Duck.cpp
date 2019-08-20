@@ -28,7 +28,7 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
     //Image
     setSprite(core.resources->Texture("duck"), sf::IntRect(0, 0, CELLSIZE.x, CELLSIZE.y*2));
 
-    animate(4, sf::seconds(0.1f));
+    animate(6, sf::seconds(0.1f));
     stopAnimation();
 
     //Bodies
@@ -38,6 +38,7 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
     addFixture(createRectangle(b2Vec2(CELLSIZE.x-2, (CELLSIZE.y*2)-2)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
     addFixture(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 53)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //1
     addFixture(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, -53)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //2
+    addFixture(createRectangle(b2Vec2(CELLSIZE.x-2, (CELLSIZE.y*2)-2)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //3
 
     //-->1
     addBody(b2BodyType::b2_dynamicBody, true);
@@ -45,6 +46,7 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
     addFixture(createRectangle(b2Vec2(CELLSIZE.x-2, 86), b2Vec2(0, 20)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
     addFixture(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 53)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //1
     addFixture(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, -33)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //2
+    addFixture(createRectangle(b2Vec2(CELLSIZE.x-2, 86), b2Vec2(0, 20)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //3
 
     //-->2
     addBody(b2BodyType::b2_dynamicBody, true);
@@ -52,10 +54,10 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
     addFixture(createRectangle(b2Vec2((CELLSIZE.x*2)-2, CELLSIZE.y-2), b2Vec2(0, 32)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
     addFixture(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 53)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //1
     addFixture(createRectangle(b2Vec2((CELLSIZE.x*2)-32, 20), b2Vec2(0, 0)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //2
+    addFixture(createRectangle(b2Vec2((CELLSIZE.x*2)-2, CELLSIZE.y-2), b2Vec2(0, 32)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //3
 
     //---
 
-    //create vectors with coefs and velocities to not HARD CODE!!!!!!!!!!!!!!!
     //clean code and calls to body, swithes,...
     //restore ground/head on changebody
 
@@ -96,7 +98,7 @@ void Duck::update(const sf::Time deltatime)
         float idealVel = stateValues[state] * std::pow(-1, (int)side);
         float impulse = body->GetMass() * (idealVel - currentVel.x);
         body->ApplyLinearImpulse(b2Vec2(impulse, 0), body->GetWorldCenter(), true);
-        //playAnimation();
+        playAnimation();
     }
     else
     {
@@ -108,13 +110,15 @@ void Duck::update(const sf::Time deltatime)
             body->ApplyLinearImpulse(b2Vec2(impulse, 0), body->GetWorldCenter(), true);
         }
         else body->SetLinearVelocity(b2Vec2(0.f, currentVel.y));
-        //stopAnimation();
+        stopAnimation();
     }
 
     if(state == MovementState_FLYING and body->GetLinearVelocity().y > 0.f)
     {
         body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, std::min(body->GetLinearVelocity().y, 2.f)));
     }
+
+    if(holdable != nullptr) holdable->setPosition(getPosition());
 
     PhysicEntity::update(deltatime);
 }
@@ -200,6 +204,27 @@ void Duck::handleEvents(const sf::Event& event)
                 case sf::Keyboard::E:
                 {
                     quack.play();
+                }
+                    break;
+                case sf::Keyboard::C:
+                {
+                    if(holdable == nullptr)
+                    {
+                        if(not holdables.empty())
+                        {
+                            holdable = (*holdables.begin())->get();
+                            holdables.erase(holdables.begin());
+                            play->deleteEntity(static_cast<Entity*>(holdable));
+
+                            holdable->setPosition(getPosition());
+                        }
+                    }
+                    else
+                    {
+                        play->addEntity(holdable->unget());
+                        //THROW????????????????????????????????????????
+                        holdable = nullptr;
+                    }
                 }
                     break;
                 default:
@@ -300,6 +325,14 @@ void Duck::onCollision(unsigned int fixtureid, PhysicEntity* collided)
             if(isTarjet(collided, IS_BLOCK)) headings++;
         }
             break;
+        case 3:
+        {
+            if(isTarjet(collided, IS_HOLDABLE))
+            {
+                holdables.insert(static_cast<Holdable*>(collided));
+            }
+        }
+            break;
         default:
             break;
     }
@@ -326,6 +359,14 @@ void Duck::onDecollision(unsigned int fixtureid, PhysicEntity* collided)
             {
                 headings--;
                 if(headings == 0) hz = true;
+            }
+        }
+            break;
+        case 3:
+        {
+            if(isTarjet(collided, IS_HOLDABLE))
+            {
+                holdables.erase(static_cast<Holdable*>(collided));
             }
         }
             break;

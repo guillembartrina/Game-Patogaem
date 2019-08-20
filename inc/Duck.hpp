@@ -45,6 +45,7 @@ class Duck : public PhysicEntity
   MovementSide side;
 
   Holdable* holdable;
+  std::set<Holdable*> holdables;
 
   unsigned int groundings, headings;
 
@@ -54,7 +55,7 @@ class Duck : public PhysicEntity
   sf::Sound quack;
 
   static const float stateValues[5];
-  static const float stateCoefs[5]; 
+  static const float stateCoefs[5];
 };
 
 #endif

@@ -44,9 +44,9 @@ protected:
     void setSpriteRect(unsigned int index);
     sf::IntRect getSpriteRect() const;
 
-private:
-
     Scene_Play* play;
+
+private:
 
     unsigned int ID;
     unsigned short CODE; //default: 0

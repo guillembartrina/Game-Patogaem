@@ -15,6 +15,8 @@
 #include "Object.hpp"
 #include "Door.hpp"
 
+#include "Holdable.hpp"
+
 enum EntityCode
 {
     ENTITY = 0x0000,
@@ -27,7 +29,9 @@ enum EntityCode
     BLOCK_BLUECASTLE = 0xC009,
 
     OBJECT = 0xE000,
-    DOOR = 0xE081
+    DOOR = 0xE081,
+
+    HOLDABLE = 0xF000,
 };
 
 static Entity* getEntitybyCode(EntityCode ic, Core core, Scene_Play* play, const sf::Vector2f& position)
@@ -59,6 +63,9 @@ static Entity* getEntitybyCode(EntityCode ic, Core core, Scene_Play* play, const
         case 0xE081:
             return new Door(core, play, position);
             break;
+        case 0xF000:
+            return new Holdable();
+            break;
         default:
             assert(false);
             return nullptr;
@@ -85,8 +92,10 @@ static const Codepair IS_BLOCK = std::make_pair(BLOCK, 0xFFF8); //1000 0000 0000
 static const Codepair IS_BLOCK_BLUECASTLE = std::make_pair(BLOCK_BLUECASTLE, 0xFFFF); //1000 0000 0000 1001
 //static const Codepair IS_OTHERPHYSICENTITIES = std::make_pair(0xC000, 0xC000); //11XX XXXX XXXX XXXX
 
-static const Codepair IS_OBJECT = std::make_pair(OBJECT, 0xE000); //1000 0000 0000 1001
-static const Codepair IS_DOOR = std::make_pair(DOOR, 0xFFFF);
+static const Codepair IS_OBJECT = std::make_pair(OBJECT, 0xE000); //111X XXXX XXXX XXXX
+static const Codepair IS_DOOR = std::make_pair(DOOR, 0xFFFF); //1110 0000 0000 0001
+
+static const Codepair IS_HOLDABLE = std::make_pair(HOLDABLE, 0xF000); //1111 XXXX XXXX XXXX
 
 /*
 CRATE

@@ -14,10 +14,14 @@
 #include "CollisionHandler.hpp"
 #include "Level.hpp"
 
-
 class Entity;
 
-typedef std::map<unsigned int, Entity*> EntityHolder;
+struct EntityComp
+{
+    bool operator()(const Entity* e1, const Entity* e2) const;
+};
+
+typedef std::set<Entity*, EntityComp> EntityHolder;
 
 class Scene_Play : public Scene
 {
@@ -41,7 +45,7 @@ public:
     unsigned int getNextID();
 
     EntityHolder::iterator addEntity(Entity* entity);
-    void deleteEntity(unsigned int id);
+    void deleteEntity(Entity* entity);
 
 private:
 
@@ -58,7 +62,7 @@ private:
     unsigned int ID;
     EntityHolder entities;
 
-    std::queue<unsigned int> toDelete;
+    std::queue<Entity*> toDelete;
 
     Level level;
 

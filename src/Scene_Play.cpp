@@ -9,6 +9,11 @@
 #include "TestPE.hpp"
 #include "Duck.hpp"
 
+bool EntityComp::operator()(const Entity* e1, const Entity* e2) const
+{
+    return (*e1 < *e2);
+}
+
 Scene_Play::Scene_Play(Core core, std::string levelname)
 : Scene(core)
 , world(b2Vec2(0.f, 40.f))
@@ -37,9 +42,9 @@ Scene_Play::~Scene_Play()
 {
     delete duck;
 
-    for(EntityHolder::iterator it = entities.begin(); it != entities.end(); it++)
+    for(EntityHolder::iterator it = entities.cbegin(); it != entities.cend(); it++)
     {
-        delete it->second;
+        delete *it;
     }
 }
 
@@ -128,12 +133,14 @@ void Scene_Play::update(const sf::Time deltatime)
 
     for(EntityHolder::iterator it = entities.begin(); it != entities.end(); it++)
     {
-        it->second->update(deltatime);
+        (*it)->update(deltatime);
     }
 
     while(not toDelete.empty())
     {
-        entities.erase(toDelete.front());
+        Entity* del = toDelete.front();
+        delete del;
+        entities.erase(del);
         toDelete.pop();
     }
 
@@ -145,12 +152,12 @@ void Scene_Play::draw(sf::RenderWindow& window) const
 {
     window.draw(background);
 
-    for(EntityHolder::const_iterator it = entities.begin(); it != entities.end(); it++)
+    for(EntityHolder::const_iterator it = entities.cbegin(); it != entities.cend(); it++)
     {
-        window.draw(*it->second);
+        window.draw(**it);
         if(sceneHBs)
         {
-            for(int i = 0; i < 4; i++) window.draw(static_cast<PhysicEntity*>(it->second)->getHB(i));
+            for(int i = 0; i < 4; i++) window.draw(static_cast<PhysicEntity*>(*it)->getHB(i));
         }
     }
 
@@ -170,11 +177,7 @@ void Scene_Play::resume() {}
 
 sf::Vector2f Scene_Play::cellToPixels(sf::Vector2u cell) const
 {
-    if(cell.x >= NUMCELLS.x or cell.y >= NUMCELLS.y)
-    {
-        std::cerr << "WARNING: Outisde testmap request position" << std::endl;
-        return sf::Vector2f(CELLSIZE) * 0.5f;
-    }
+    assert(cell.x <= NUMCELLS.x and cell.y <= NUMCELLS.y);
     return sf::Vector2f(cell.x * CELLSIZE.x, cell.y * CELLSIZE.y) + (sf::Vector2f(CELLSIZE) * 0.5f);
 }
 
@@ -186,22 +189,20 @@ unsigned int Scene_Play::getNextID()
 
 EntityHolder::iterator Scene_Play::addEntity(Entity* entity)
 {
-    std::pair<EntityHolder::iterator, bool> it = entities.insert(std::make_pair(entity->getID(), entity));
-    if(isTarjet(it.first->second, IS_PHYSICENTITY)) static_cast<PhysicEntity*>(it.first->second)->physicize(world);
+    std::pair<EntityHolder::iterator, bool> it = entities.insert(entity);
+    if(isTarjet(*it.first, IS_PHYSICENTITY)) static_cast<PhysicEntity*>(*it.first)->physicize(world);
 
     return it.first;
 }
 
-void Scene_Play::deleteEntity(unsigned int id)
+void Scene_Play::deleteEntity(Entity* entity)
 {
-    toDelete.push(id);
+    toDelete.push(entity);
 }
 
 void Scene_Play::loadLevel(Level* level)
 {
     entities.clear();
-
-    sf::Vector2u sides[4] = { sf::Vector2u(0, -1), sf::Vector2u(1, 0), sf::Vector2u(0, 1), sf::Vector2u(-1, 0) };
 
     background.setTexture(&core.resources->Texture(level->getBackground()));
 
