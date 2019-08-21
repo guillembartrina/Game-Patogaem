@@ -29,6 +29,8 @@ Object::~Object() {}
 
 void Object::update(const sf::Time deltatime)
 {
+    PhysicEntity::update(deltatime);
+    
     if(active)
     {
         currentTime += deltatime;
@@ -38,8 +40,6 @@ void Object::update(const sf::Time deltatime)
             onTimerTrigger();
         }
     }
-
-    PhysicEntity::update(deltatime);
 }
 
 void Object::action() {}

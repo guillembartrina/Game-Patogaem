@@ -31,7 +31,7 @@ Door::Door(Core core, Scene_Play* play, const sf::Vector2f& position) : Object(p
 
 Door::~Door() {}
 
-void Door::onPrecollision(unsigned int fixtureid, PhysicEntity* collided, b2Contact* contact)
+void Door::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact)
 {
     printInfo("> DOOR PRECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
 
@@ -50,7 +50,7 @@ void Door::onPrecollision(unsigned int fixtureid, PhysicEntity* collided, b2Cont
     }
 }
 
-void Door::onCollision(unsigned int fixtureid, PhysicEntity* collided)
+void Door::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
 {
     printInfo("> DOOR COLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
 
@@ -91,7 +91,7 @@ void Door::onCollision(unsigned int fixtureid, PhysicEntity* collided)
     }
 }
 
-void Door::onDecollision(unsigned int fixtureid, PhysicEntity* collided)
+void Door::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
 {
     printInfo("> DOOR DECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
 

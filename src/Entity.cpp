@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "Utils.hpp"
+#include "EntityCreator.hpp"
 
 Entity::Entity()
 {
@@ -12,7 +13,7 @@ Entity::Entity()
     haveAnimation = false;
     setPosition(ZEROVECTOR_F);
     
-    CODE = 0x0000;
+    setCODE(ENTITY);
 }
 
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position) : play(play)
@@ -22,7 +23,7 @@ Entity::Entity(Scene_Play* play, const sf::Vector2f& position) : play(play)
     haveAnimation = false;
     setPosition(position);
     
-    CODE = 0x0000;
+    setCODE(ENTITY);
 }
 
 Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture& texture, const sf::IntRect& rect) : play(play)
@@ -32,11 +33,10 @@ Entity::Entity(Scene_Play* play, const sf::Vector2f& position, const sf::Texture
     haveAnimation = false;
     sprite.setTexture(texture);
     sprite.setTextureRect(rect);
-    int textureSize = texture.getSize().y;
-    sprite.setOrigin(sf::Vector2f(textureSize, textureSize) * 0.5f);
+    sprite.setOrigin(sf::Vector2f(rect.width, rect.height) * 0.5f);
     setPosition(position);
     
-    CODE = 0x0000;
+    setCODE(ENTITY);
 }
 
 Entity::~Entity() {}
@@ -164,7 +164,7 @@ void Entity::setSprite(const sf::Texture& texture, const sf::IntRect& rect)
     sprite.setTexture(texture);
     sprite.setTextureRect(rect);
     sprite.setOrigin(sf::Vector2f(rect.width, rect.height) * 0.5f);
-    setPosition(getPosition());
+    sprite.setPosition(getPosition());
     haveSprite = true;
 }
 

@@ -13,21 +13,24 @@ void CollisionHandler::PreSolve(b2Contact* contact, const b2Manifold *oldManifol
     b2Fixture* fixtureA = contact->GetFixtureA();
     b2Fixture* fixtureB = contact->GetFixtureB();
 
-    void* userDataA = fixtureA->GetBody()->GetUserData();
-    void* userDataB = fixtureB->GetBody()->GetUserData();
+    unsigned int fixtureUserDataA = (uintptr_t)fixtureA->GetUserData();
+    unsigned int fixtureUserDataB = (uintptr_t)fixtureB->GetUserData();
+
+    PhysicEntity* userDataA = static_cast<PhysicEntity*>(fixtureA->GetBody()->GetUserData());
+    PhysicEntity* userDataB = static_cast<PhysicEntity*>(fixtureB->GetBody()->GetUserData());
 
     if(not fixtureA->IsSensor() and not fixtureB->IsSensor())
     {
-        printInfo("Sensor of <" << static_cast<Entity*>(userDataA)->getID() << "> precolliding with <" << static_cast<Entity*>(userDataB)->getID() << ">");
+        printInfo("Sensor of <" << userDataA->getID() << "> colliding with <" << userDataB->getID() << ">");
 
-        static_cast<PhysicEntity*>(userDataA)->onPrecollision((unsigned int)(intptr_t)fixtureA->GetUserData(), static_cast<PhysicEntity*>(userDataB), contact);
+        userDataA->onPrecollision(fixtureUserDataA & 0xFFFF, userDataB, fixtureUserDataB >> 16, contact);
     }
 
-    if(not fixtureA->IsSensor() and not fixtureB->IsSensor())
+    if(not fixtureB->IsSensor() and not fixtureA->IsSensor())
     {
-        printInfo("Sensor of <" << static_cast<Entity*>(userDataB)->getID() << "> precolliding with <" << static_cast<Entity*>(userDataA)->getID() << ">");
+        printInfo("Sensor of <" << userDataB->getID() << "> colliding with <" << userDataA->getID() << ">");
 
-        static_cast<PhysicEntity*>(userDataB)->onPrecollision((unsigned int)(intptr_t)fixtureB->GetUserData(), static_cast<PhysicEntity*>(userDataA), contact);
+        userDataB->onPrecollision(fixtureUserDataB & 0xFFFF, userDataA, fixtureUserDataA >> 16, contact);
     }
 }
 
@@ -36,21 +39,24 @@ void CollisionHandler::BeginContact(b2Contact* contact)
     b2Fixture* fixtureA = contact->GetFixtureA();
     b2Fixture* fixtureB = contact->GetFixtureB();
 
-    void* userDataA = fixtureA->GetBody()->GetUserData();
-    void* userDataB = fixtureB->GetBody()->GetUserData();
+    unsigned int fixtureUserDataA = (uintptr_t)fixtureA->GetUserData();
+    unsigned int fixtureUserDataB = (uintptr_t)fixtureB->GetUserData();
+
+    PhysicEntity* userDataA = static_cast<PhysicEntity*>(fixtureA->GetBody()->GetUserData());
+    PhysicEntity* userDataB = static_cast<PhysicEntity*>(fixtureB->GetBody()->GetUserData());
 
     if(fixtureA->IsSensor() and not fixtureB->IsSensor())
     {
-        printInfo("Sensor of <" << static_cast<Entity*>(userDataA)->getID() << "> colliding with <" << static_cast<Entity*>(userDataB)->getID() << ">");
+        printInfo("Sensor of <" << userDataA->getID() << "> colliding with <" << userDataB->getID() << ">");
 
-        static_cast<PhysicEntity*>(userDataA)->onCollision((unsigned int)(intptr_t)fixtureA->GetUserData(), static_cast<PhysicEntity*>(userDataB));
+        userDataA->onCollision(fixtureUserDataA & 0xFFFF, userDataB, fixtureUserDataB >> 16);
     }
 
     if(fixtureB->IsSensor() and not fixtureA->IsSensor())
-    {
-        printInfo("Sensor of <" << static_cast<Entity*>(userDataB)->getID() << "> colliding with <" << static_cast<Entity*>(userDataA)->getID() << ">");
+    {(fixtureUserDataA & 0xFFFF, fixtureUserDataB >> 16, userDataB);
+        printInfo("Sensor of <" << userDataB->getID() << "> colliding with <" << userDataA->getID() << ">");
 
-        static_cast<PhysicEntity*>(userDataB)->onCollision((unsigned int)(intptr_t)fixtureB->GetUserData(), static_cast<PhysicEntity*>(userDataA));
+        userDataB->onCollision(fixtureUserDataB & 0xFFFF, userDataA, fixtureUserDataA >> 16);
     }
 }
 
@@ -59,20 +65,23 @@ void CollisionHandler::EndContact(b2Contact* contact)
     b2Fixture* fixtureA = contact->GetFixtureA();
     b2Fixture* fixtureB = contact->GetFixtureB();
 
-    void* userDataA = fixtureA->GetBody()->GetUserData();
-    void* userDataB = fixtureB->GetBody()->GetUserData();
+    unsigned int fixtureUserDataA = (uintptr_t)fixtureA->GetUserData();
+    unsigned int fixtureUserDataB = (uintptr_t)fixtureB->GetUserData();
+
+    PhysicEntity* userDataA = static_cast<PhysicEntity*>(fixtureA->GetBody()->GetUserData());
+    PhysicEntity* userDataB = static_cast<PhysicEntity*>(fixtureB->GetBody()->GetUserData());
 
     if(fixtureA->IsSensor() and not fixtureB->IsSensor())
     {
-        printInfo("Sensor of <" << static_cast<Entity*>(userDataA)->getID() << "> decolliding with <" << static_cast<Entity*>(userDataB)->getID() << ">");
+        printInfo("Sensor of <" << userDataA->getID() << "> colliding with <" << userDataB->getID() << ">");
 
-        static_cast<PhysicEntity*>(userDataA)->onDecollision((unsigned int)(intptr_t)fixtureA->GetUserData(), static_cast<PhysicEntity*>(userDataB));
+        userDataA->onDecollision(fixtureUserDataA & 0xFFFF, userDataB, fixtureUserDataB >> 16);
     }
 
     if(fixtureB->IsSensor() and not fixtureA->IsSensor())
     {
-        printInfo("Sensor of <" << static_cast<Entity*>(userDataB)->getID() << "> decolliding with <" << static_cast<Entity*>(userDataA)->getID() << ">");
+        printInfo("Sensor of <" << userDataB->getID() << "> colliding with <" << userDataA->getID() << ">");
 
-        static_cast<PhysicEntity*>(userDataB)->onDecollision((unsigned int)(intptr_t)fixtureB->GetUserData(), static_cast<PhysicEntity*>(userDataA));
+        userDataB->onDecollision(fixtureUserDataB & 0xFFFF, userDataA, fixtureUserDataA >> 16);
     }
 }

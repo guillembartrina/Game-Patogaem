@@ -1,13 +1,14 @@
 
 #include "Duck.hpp"
 
-#include <math.h>
+#include <cmath>
 
 #include "Utils.hpp"
 #include "EntityCreator.hpp"
 
 const float Duck::stateValues[5] = {7.f, 7.f, 4.5f, 0.f, 10.f};
 const float Duck::stateCoefs[5] = {0.75f, 0.85f, 0.85f, 0.f, 0.95f};
+const sf::Vector2f Duck::holdableOffset[5] = {sf::Vector2f(20, 0), sf::Vector2f(20, 0), sf::Vector2f(20, 0), sf::Vector2f(20, 20), sf::Vector2f(0, 20)};
 
 Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEntity(play, position)
 {
@@ -67,7 +68,9 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
 Duck::~Duck() {}
 
 void Duck::update(const sf::Time deltatime)
-{   
+{
+    PhysicEntity::update(deltatime);
+
     if(go)
     {
         if(state == MovementState_FLYING or state == MovementState_JUMPING)
@@ -98,7 +101,8 @@ void Duck::update(const sf::Time deltatime)
         float idealVel = stateValues[state] * std::pow(-1, (int)side);
         float impulse = body->GetMass() * (idealVel - currentVel.x);
         body->ApplyLinearImpulse(b2Vec2(impulse, 0), body->GetWorldCenter(), true);
-        playAnimation();
+        if(state == MovementState_STANDING) playAnimation();
+        else stopAnimation();
     }
     else
     {
@@ -118,9 +122,7 @@ void Duck::update(const sf::Time deltatime)
         body->SetLinearVelocity(b2Vec2(body->GetLinearVelocity().x, std::min(body->GetLinearVelocity().y, 2.f)));
     }
 
-    if(holdable != nullptr) holdable->setPosition(getPosition());
-
-    PhysicEntity::update(deltatime);
+    if(holdable != nullptr) holdable->setPosition(getPosition() + sf::Vector2f(holdableOffset[state].x * std::pow(-1.f, (int)side), holdableOffset[state].y));
 }
 
 void Duck::handleEvents(const sf::Event& event)
@@ -305,7 +307,13 @@ void Duck::handleEvents(const sf::Event& event)
     setSpriteRect((getSpriteRect().top/256)*2+side);
 }
 
-void Duck::onCollision(unsigned int fixtureid, PhysicEntity* collided)
+void Duck::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    Entity::draw(target, states);
+    if(holdable != nullptr) target.draw(*holdable, states);
+}
+
+void Duck::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
 {
     printInfo("> DUCK COLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
 
@@ -313,7 +321,7 @@ void Duck::onCollision(unsigned int fixtureid, PhysicEntity* collided)
     {
         case 1:
         {
-            if(isTarjet(collided, IS_BLOCK))
+            if(cc & FOREGROUND_MASK)
             {
                 if(groundings == 0) go = true;
                 groundings++;
@@ -322,7 +330,7 @@ void Duck::onCollision(unsigned int fixtureid, PhysicEntity* collided)
             break;
         case 2:
         {
-            if(isTarjet(collided, IS_BLOCK)) headings++;
+            if(cc & FOREGROUND_MASK) headings++;
         }
             break;
         case 3:
@@ -338,7 +346,7 @@ void Duck::onCollision(unsigned int fixtureid, PhysicEntity* collided)
     }
 }
 
-void Duck::onDecollision(unsigned int fixtureid, PhysicEntity* collided)
+void Duck::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
 {
     printInfo("> DUCK DECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
 
@@ -346,7 +354,7 @@ void Duck::onDecollision(unsigned int fixtureid, PhysicEntity* collided)
     {
         case 1:
         {
-            if(isTarjet(collided, IS_BLOCK))
+            if(cc & FOREGROUND_MASK)
             {
                 groundings--;
                 if(groundings == 0) gz = true;
@@ -355,7 +363,7 @@ void Duck::onDecollision(unsigned int fixtureid, PhysicEntity* collided)
             break;
         case 2:
         {
-            if(isTarjet(collided, IS_BLOCK))
+            if(cc & FOREGROUND_MASK)
             {
                 headings--;
                 if(headings == 0) hz = true;

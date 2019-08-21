@@ -24,7 +24,7 @@ public:
 
     virtual void update(const sf::Time deltatime);
 
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     bool operator==(const Entity& e) const;
     bool operator<(const Entity& e) const;

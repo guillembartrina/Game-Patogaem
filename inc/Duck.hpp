@@ -32,8 +32,10 @@ class Duck : public PhysicEntity
 
   void handleEvents(const sf::Event& event);
 
-  void onCollision(unsigned int fixtureid, PhysicEntity* collided) override;
-  void onDecollision(unsigned int fixtureid, PhysicEntity* collided) override;
+  void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+
+  void onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) override;
+  void onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) override;
 
   void changeState(MovementState newstate);
 
@@ -56,6 +58,7 @@ class Duck : public PhysicEntity
 
   static const float stateValues[5];
   static const float stateCoefs[5];
+  static const sf::Vector2f holdableOffset[5];
 };
 
 #endif

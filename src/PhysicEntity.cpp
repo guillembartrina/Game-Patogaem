@@ -64,7 +64,7 @@ b2Body* PhysicEntity::physicize(b2World& world)
         for(unsigned int j = 0; j < bodyDefs[i]->fixtureDef.size(); j++)
         {
             b2Fixture* tmp = bodies[i]->CreateFixture(&bodyDefs[i]->fixtureDef[j]);
-            tmp->SetUserData((void*)j);
+            tmp->SetUserData((void*)((bodyDefs[i]->category << 16) | j));
         }
 
         bodies[i]->SetUserData(this);
@@ -86,36 +86,36 @@ void PhysicEntity::setPosition(const sf::Vector2f& position)
 {
     assert(physicized);
 
-    body->SetTransform(tob2Vec2(metrize(position)), body->GetAngle());
-
     Entity::setPosition(position);
+    
+    body->SetTransform(tob2Vec2(metrize(position)), body->GetAngle());
 }
 
 void PhysicEntity::setRotation(float angle)
 {
     assert(physicized);
     
-    body->SetTransform(body->GetPosition(), -1*radize(angle)); //!!
-
     Entity::setRotation(angle);
+    
+    body->SetTransform(body->GetPosition(), -1*radize(angle)); //!!
 }
 
 void PhysicEntity::update(const sf::Time deltatime)
 {
+    Entity::update(deltatime);
+    
     if(body->IsAwake())
     {
         Entity::setPosition(pixelize(toVector2f(body->GetPosition())));
         if(not body->IsFixedRotation()) Entity::setRotation(anglize(body->GetAngle()));
     }
-
-    Entity::update(deltatime);
 }
 
-void PhysicEntity::onPrecollision(unsigned int fixtureid, PhysicEntity* collided, b2Contact* contact) {}
+void PhysicEntity::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact) {}
 
-void PhysicEntity::onCollision(unsigned int fixtureid, PhysicEntity* collided) {}
+void PhysicEntity::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) {}
 
-void PhysicEntity::onDecollision(unsigned int fixtureid, PhysicEntity* collided) {}
+void PhysicEntity::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) {}
 
 //void PhysicEntity::onReduceDurability() {}
 
@@ -175,9 +175,12 @@ void PhysicEntity::addFixture(const b2Shape* shape, CollisionCategory category, 
 {
     assert(numBodies > 0);
 
-    bodyDefs[numBodies - 1]->fixtureDef.push_back(b2FixtureDef());
+    BodyDef* bodyDef = bodyDefs[numBodies-1];
 
-    b2FixtureDef& current = bodyDefs[numBodies - 1]->fixtureDef.back();
+    if(bodyDef->fixtureDef.empty()) bodyDef->category = category;
+    bodyDef->fixtureDef.push_back(b2FixtureDef());
+
+    b2FixtureDef& current = bodyDef->fixtureDef.back();
 
     current.shape = shape;
     current.friction = friction;
