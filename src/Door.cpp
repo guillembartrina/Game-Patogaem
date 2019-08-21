@@ -16,7 +16,7 @@ Door::Door(Core core, Scene_Play* play, const sf::Vector2f& position) : Object(p
     close.setBuffer(core.resources->Sound("door_close"));
     close.setVolume(80.f);
 
-    setSprite(core.resources->Texture("door"), sf::IntRect(ZEROVECTOR_I, sf::Vector2i(64, 128)));
+    setSprite(core.resources->Texture("door"), sf::IntRect(ZEROVECTOR_I, sf::Vector2i(CELLSIZE.x, CELLSIZE.y*2)));
 
     animate(3, sf::seconds(0.05f), false);
     stopAnimation();

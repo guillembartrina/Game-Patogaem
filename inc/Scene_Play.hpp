@@ -44,7 +44,10 @@ public:
 
     unsigned int getNextID();
 
-    EntityHolder::iterator addEntity(Entity* entity);
+    EntityHolder::iterator createEntity(Entity* entity);
+    void destroyEntity(Entity* entity);
+
+    void addEntity(Entity* entity);
     void deleteEntity(Entity* entity);
 
 private:
@@ -62,7 +65,7 @@ private:
     unsigned int ID;
     EntityHolder entities;
 
-    std::queue<Entity*> toDelete;
+    std::queue<Entity*> toDestroy;
 
     Level level;
 

@@ -16,6 +16,7 @@
 #include "Door.hpp"
 
 #include "Holdable.hpp"
+#include "Crate.hpp"
 
 enum EntityCode
 {
@@ -32,6 +33,7 @@ enum EntityCode
     DOOR = 0xE081,
 
     HOLDABLE = 0xF000,
+    CRATE = 0xF001
 };
 
 static Entity* getEntitybyCode(EntityCode ic, Core core, Scene_Play* play, const sf::Vector2f& position)
@@ -66,6 +68,9 @@ static Entity* getEntitybyCode(EntityCode ic, Core core, Scene_Play* play, const
         case 0xF000:
             return new Holdable();
             break;
+        case 0xF001:
+            return new Crate(core, play, position);
+            break;
         default:
             assert(false);
             return nullptr;
@@ -96,6 +101,7 @@ static const Codepair IS_OBJECT = std::make_pair(OBJECT, 0xE000); //111X XXXX XX
 static const Codepair IS_DOOR = std::make_pair(DOOR, 0xFFFF); //1110 0000 0000 0001
 
 static const Codepair IS_HOLDABLE = std::make_pair(HOLDABLE, 0xF000); //1111 XXXX XXXX XXXX
+static const Codepair IS_CRATE = std::make_pair(CRATE, 0xFFFF); //1111 0000 0000 0001
 
 /*
 CRATE

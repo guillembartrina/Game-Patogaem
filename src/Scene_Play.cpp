@@ -136,12 +136,12 @@ void Scene_Play::update(const sf::Time deltatime)
         (*it)->update(deltatime);
     }
 
-    while(not toDelete.empty())
+    while(not toDestroy.empty())
     {
-        Entity* del = toDelete.front();
-        delete del;
-        entities.erase(del);
-        toDelete.pop();
+        Entity* e = toDestroy.front();
+        delete e;
+        entities.erase(e);
+        toDestroy.pop();
     }
 
     //IMGUI
@@ -187,7 +187,7 @@ unsigned int Scene_Play::getNextID()
     return ID;
 }
 
-EntityHolder::iterator Scene_Play::addEntity(Entity* entity)
+EntityHolder::iterator Scene_Play::createEntity(Entity* entity)
 {
     std::pair<EntityHolder::iterator, bool> it = entities.insert(entity);
     if(isTarjet(*it.first, IS_PHYSICENTITY)) static_cast<PhysicEntity*>(*it.first)->physicize(world);
@@ -195,9 +195,19 @@ EntityHolder::iterator Scene_Play::addEntity(Entity* entity)
     return it.first;
 }
 
+void Scene_Play::destroyEntity(Entity* entity)
+{
+    toDestroy.push(entity);
+}
+
+void Scene_Play::addEntity(Entity* entity)
+{
+    entities.insert(entity);
+}
+
 void Scene_Play::deleteEntity(Entity* entity)
 {
-    toDelete.push(entity);
+    entities.erase(entity);
 }
 
 void Scene_Play::loadLevel(Level* level)
@@ -212,7 +222,7 @@ void Scene_Play::loadLevel(Level* level)
         {
             if(testmap[j][i] != 0)
             {
-                addEntity(getEntitybyCode(EntityCode(testmap[j][i]), core, this, cellToPixels(sf::Vector2u(i, j))));
+                createEntity(getEntitybyCode(EntityCode(testmap[j][i]), core, this, cellToPixels(sf::Vector2u(i, j))));
             }
         }
     }

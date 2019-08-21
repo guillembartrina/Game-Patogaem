@@ -213,9 +213,9 @@ void Duck::handleEvents(const sf::Event& event)
                         if(not holdables.empty())
                         {
                             holdable = (*holdables.begin())->get();
-                            holdables.erase(holdables.begin());
-                            play->deleteEntity(static_cast<Entity*>(holdable));
+                            holdables.erase(holdable);
 
+                            play->deleteEntity(static_cast<Entity*>(holdable));
                             holdable->setPosition(getPosition());
                         }
                     }

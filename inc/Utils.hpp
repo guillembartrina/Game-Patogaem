@@ -41,7 +41,7 @@ static const unsigned short testmap[20][40] =
     {BLOCK_BLUECASTLE, 0, BLOCK_BLUECASTLE, BLOCK_BLUECASTLE, BLOCK_BLUECASTLE, BLOCK_BLUECASTLE, BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE},
     {BLOCK_BLUECASTLE, BLOCK_BLUECASTLE, BLOCK_BLUECASTLE, BLOCK_BLUECASTLE, 0, 0, BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE},
     {BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE},
-    {BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE},
+    {BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, CRATE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE},
     {BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE},
     {BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE},
     {BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, BLOCK_BLUECASTLE},
