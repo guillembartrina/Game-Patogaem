@@ -127,7 +127,7 @@ void Scene_Play::update(const sf::Time deltatime)
     core.window->setView(view);
     background.setPosition(view.getCenter() - view.getSize() / 2.f);
 
-    world.Step(deltatime.asSeconds(), 4, 4);
+    world.Step(deltatime.asSeconds(), 8, 8);
 
     duck->update(deltatime);
 
@@ -155,9 +155,11 @@ void Scene_Play::draw(sf::RenderWindow& window) const
     for(EntityHolder::const_iterator it = entities.cbegin(); it != entities.cend(); it++)
     {
         window.draw(**it);
-        if(sceneHBs)
+        if(sceneHBs and isTarjet(*it, IS_PHYSICENTITY))
         {
-            for(int i = 0; i < 4; i++) window.draw(static_cast<PhysicEntity*>(*it)->getHB(i));
+            std::vector<sf::RectangleShape> hbs;
+            static_cast<PhysicEntity*>(*it)->getHBs(hbs);
+            for(unsigned int i = 0; i < hbs.size(); i++) window.draw(hbs[i]);
         }
     }
 
@@ -165,9 +167,9 @@ void Scene_Play::draw(sf::RenderWindow& window) const
 
     if(duckHBs)
     {
-        window.draw(static_cast<Duck*>(duck)->getHB(0));
-        window.draw(static_cast<Duck*>(duck)->getHB(1));
-        window.draw(static_cast<Duck*>(duck)->getHB(2));
+        std::vector<sf::RectangleShape> hbs;
+        static_cast<PhysicEntity*>(duck)->getHBs(hbs);
+        for(unsigned int i = 0; i < hbs.size(); i++) window.draw(hbs[i]);
     }
 }
 

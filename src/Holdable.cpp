@@ -15,8 +15,9 @@ Holdable* Holdable::get()
     return this;
 }
 
-Entity* Holdable::unget()
+Entity* Holdable::unget(const sf::Vector2f& impulse)
 {
     body->SetActive(true);
+    body->ApplyLinearImpulse(tob2Vec2(impulse * body->GetMass()), body->GetWorldCenter(), true);
     return this;
 }

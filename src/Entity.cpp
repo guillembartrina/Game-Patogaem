@@ -179,3 +179,19 @@ sf::IntRect Entity::getSpriteRect() const
 {
     return sprite.getTextureRect();
 }
+
+void Entity::addSound(const sf::SoundBuffer& buffer, float volume)
+{
+    sf::Sound sound(buffer);
+    sound.setVolume(volume);
+
+    sounds.push_back(sound);
+}
+
+void Entity::playSound(unsigned int index)
+{
+    assert(index < sounds.size());
+
+    sounds[index].play();
+}
+    

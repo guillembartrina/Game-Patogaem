@@ -8,8 +8,8 @@ Crate::Crate(Core core, Scene_Play* play, const sf::Vector2f& position) : Holdab
 {
     setSprite(core.resources->Texture("crate"), sf::IntRect(ZEROVECTOR_I, sf::Vector2i(CELLSIZE)));
     
-    addBody(b2BodyType::b2_dynamicBody);
-    addFixture(createRectangle(tob2Vec2(CELLSIZE)), CollisionCategory_DYNAMIC_BACKGROUND, 0.4f, 0.f, 1.f);
+    addBody(b2BodyType::b2_dynamicBody, true);
+    addFixture(createRectangle(tob2Vec2(sf::Vector2f(CELLSIZE.x-4, CELLSIZE.y-4))), CollisionCategory_DYNAMIC_FOREGROUND, 0.5f, 0.f, 1.f);
 
     setCODE(CRATE);
 }

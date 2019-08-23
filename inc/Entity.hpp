@@ -44,6 +44,9 @@ protected:
     void setSpriteRect(unsigned int index);
     sf::IntRect getSpriteRect() const;
 
+    void addSound(const sf::SoundBuffer& buffer, float volume = 0.8f);
+    void playSound(unsigned int index);
+
     Scene_Play* play;
 
 private:
@@ -62,6 +65,8 @@ private:
 
     unsigned int currentFrame;
     sf::Time currentTime;
+
+    std::vector<sf::Sound> sounds;
 
 };
 

@@ -100,6 +100,13 @@ void PhysicEntity::setRotation(float angle)
     body->SetTransform(body->GetPosition(), -1*radize(angle)); //!!
 }
 
+void PhysicEntity::applyImpulse(const sf::Vector2f& impulse)
+{
+    assert(physicized);
+
+    body->ApplyLinearImpulse(metrize(tob2Vec2(impulse)), body->GetWorldCenter(), true);
+}
+
 void PhysicEntity::update(const sf::Time deltatime)
 {
     Entity::update(deltatime);
@@ -126,8 +133,10 @@ CollisionCategory PhysicEntity::getCC() const
 }
 */
 
-sf::RectangleShape PhysicEntity::getHB(unsigned int num) const
+void PhysicEntity::getHBs(std::vector<sf::RectangleShape>& hbs) const
 {
+    hbs.clear();
+
     sf::RectangleShape hb;
 
     hb.setFillColor(sf::Color::Transparent);
@@ -137,18 +146,20 @@ sf::RectangleShape PhysicEntity::getHB(unsigned int num) const
     if(physicized)
     {
         b2Fixture* f = body->GetFixtureList();
-        while(num > 0 and f != nullptr) { f = f->GetNext(); num--; }
+        while(f != nullptr)
+        { 
+            b2AABB aabb;
+            f->GetShape()->ComputeAABB(&aabb, body->GetTransform(), 0);
+            sf::Vector2f hs = toVector2f(pixelize(aabb.GetExtents()));
+            hb.setSize(hs*2.f);
+            hb.setOrigin(hs);
+            hb.setPosition(toVector2f(pixelize(aabb.GetCenter())));
 
-        if(f == nullptr) return hb;
-
-        sf::Vector2f hs = toVector2f(pixelize(f->GetAABB(0).GetExtents()));
-        
-        hb.setSize(hs * 2.f);
-        hb.setOrigin(hs);
-        hb.setPosition(toVector2f(pixelize(f->GetAABB(0).GetCenter())));
+            hbs.push_back(hb);
+            
+            f = f->GetNext();
+        }
     }
-
-    return hb;
 }
 
 void PhysicEntity::addBody(b2BodyType type, bool fixedrotation)

@@ -19,19 +19,11 @@ void CollisionHandler::PreSolve(b2Contact* contact, const b2Manifold *oldManifol
     PhysicEntity* userDataA = static_cast<PhysicEntity*>(fixtureA->GetBody()->GetUserData());
     PhysicEntity* userDataB = static_cast<PhysicEntity*>(fixtureB->GetBody()->GetUserData());
 
-    if(not fixtureA->IsSensor() and not fixtureB->IsSensor())
-    {
-        printInfo("Sensor of <" << userDataA->getID() << "> colliding with <" << userDataB->getID() << ">");
+    printInfo("Fixture of <" << userDataA->getID() << "> presolving with <" << userDataB->getID() << ">");
+    
+    userDataA->onPrecollision(fixtureUserDataA & 0xFFFF, userDataB, fixtureUserDataB >> 16, contact);
+    userDataB->onPrecollision(fixtureUserDataB & 0xFFFF, userDataA, fixtureUserDataA >> 16, contact);
 
-        userDataA->onPrecollision(fixtureUserDataA & 0xFFFF, userDataB, fixtureUserDataB >> 16, contact);
-    }
-
-    if(not fixtureB->IsSensor() and not fixtureA->IsSensor())
-    {
-        printInfo("Sensor of <" << userDataB->getID() << "> colliding with <" << userDataA->getID() << ">");
-
-        userDataB->onPrecollision(fixtureUserDataB & 0xFFFF, userDataA, fixtureUserDataA >> 16, contact);
-    }
 }
 
 void CollisionHandler::BeginContact(b2Contact* contact)
@@ -53,7 +45,7 @@ void CollisionHandler::BeginContact(b2Contact* contact)
     }
 
     if(fixtureB->IsSensor() and not fixtureA->IsSensor())
-    {(fixtureUserDataA & 0xFFFF, fixtureUserDataB >> 16, userDataB);
+    {
         printInfo("Sensor of <" << userDataB->getID() << "> colliding with <" << userDataA->getID() << ">");
 
         userDataB->onCollision(fixtureUserDataB & 0xFFFF, userDataA, fixtureUserDataA >> 16);
@@ -73,14 +65,14 @@ void CollisionHandler::EndContact(b2Contact* contact)
 
     if(fixtureA->IsSensor() and not fixtureB->IsSensor())
     {
-        printInfo("Sensor of <" << userDataA->getID() << "> colliding with <" << userDataB->getID() << ">");
+        printInfo("Sensor of <" << userDataA->getID() << "> decolliding with <" << userDataB->getID() << ">");
 
         userDataA->onDecollision(fixtureUserDataA & 0xFFFF, userDataB, fixtureUserDataB >> 16);
     }
 
     if(fixtureB->IsSensor() and not fixtureA->IsSensor())
     {
-        printInfo("Sensor of <" << userDataB->getID() << "> colliding with <" << userDataA->getID() << ">");
+        printInfo("Sensor of <" << userDataB->getID() << "> decolliding with <" << userDataA->getID() << ">");
 
         userDataB->onDecollision(fixtureUserDataB & 0xFFFF, userDataA, fixtureUserDataA >> 16);
     }

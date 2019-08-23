@@ -30,7 +30,7 @@ Block::Block(Core core, Scene_Play* play, const sf::Vector2f& position, unsigned
 
     for(int i = 0; i < 4; ++i)
     {
-        if(sides & (0x08 >> i)) addFixture(&edges[i], CollisionCategory_STATIC_FOREGROUND, 0.f, 0.f, 1.f);
+        if(sides & (0x08 >> i)) addFixture(&edges[i], CollisionCategory_STATIC_FOREGROUND, 0.5f, 0.f, 1.f);
     }
 
     setCODE(type);

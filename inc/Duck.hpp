@@ -34,6 +34,7 @@ class Duck : public PhysicEntity
 
   void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
+  void onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact) override;
   void onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) override;
   void onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) override;
 
@@ -56,8 +57,8 @@ class Duck : public PhysicEntity
 
   sf::Sound quack;
 
-  static const float stateValues[5];
-  static const float stateCoefs[5];
+  static const float dynamicsValues[5];
+  static const float dynamicsCoefs[5];
   static const sf::Vector2f holdableOffset[5];
 };
 

@@ -14,7 +14,7 @@ class Holdable : public Object
     ~Holdable();
 
     Holdable* get();
-    Entity* unget();
+    Entity* unget(const sf::Vector2f& impulse);
 
     protected:
 

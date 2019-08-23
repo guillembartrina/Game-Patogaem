@@ -72,6 +72,7 @@ public:
     
     void setPosition(const sf::Vector2f& position);
     void setRotation(float angle);
+    void applyImpulse(const sf::Vector2f& impulse);
 
     virtual void update(const sf::Time deltatime) override;
 
@@ -84,7 +85,7 @@ public:
     //virtual void onReduceDurability();
 
     //CollisionCategory getCC() const;
-    sf::RectangleShape getHB(unsigned int num = 0) const;
+    void getHBs(std::vector<sf::RectangleShape>& hbs) const;
 
 protected:
 

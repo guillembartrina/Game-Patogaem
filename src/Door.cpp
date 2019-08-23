@@ -35,19 +35,7 @@ void Door::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsi
 {
     printInfo("> DOOR PRECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
 
-    switch(fixtureid)
-    {
-        case 0:
-        {
-            if(isTarjet(collided, IS_DUCK) and (rightings or leftings))
-            {
-                contact->SetEnabled(false);
-            }
-        }
-            break;
-        default:
-            break;
-    }
+    if(timerActive() or rightings or leftings) contact->SetEnabled(false);
 }
 
 void Door::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
