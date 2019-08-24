@@ -27,15 +27,10 @@ Scene_Play::Scene_Play(Core core, std::string levelname)
     duck = new Duck(core, this, sf::Vector2f(300, 900));
     static_cast<PhysicEntity*>(duck)->physicize(world);
 
-    //TEST
-    level.setName("testlevel");
-    level.setBackground("background1");
-
     //IMGUI
     duckHBs = false;
     sceneHBs = false;
-    x = y = 0;
-    m = 2;
+    currentEntity = 0;
 }
 
 Scene_Play::~Scene_Play()
@@ -53,6 +48,8 @@ void Scene_Play::init()
     view.setSize(sf::Vector2f(core.window->getSize()));
     view.setCenter(sf::Vector2f(CELLSIZE.x * NUMCELLS.x, CELLSIZE.y * NUMCELLS.y) * 0.5f);
     core.window->setView(view);
+
+    level.deserialize(0);
 
     loadLevel(&level);
 }
@@ -90,9 +87,10 @@ void Scene_Play::handleEvents(const sf::Event& event)
                     view.move(sf::Vector2f(32.f, 0.f));
                 }
                     break;
-                case sf::Keyboard::C:
+                case sf::Keyboard::P:
                 {
-                    //addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(core.window->mapPixelToCoords(sf::Mouse::getPosition(*core.window)) * (1.f/64.f))), "crate", b2BodyType::b2_dynamicBody, CollisionCategory(m)));    
+                    sf::Vector2f pos = sf::Vector2f(sf::Mouse::getPosition(*core.window)) - (view.getSize() * 0.5f) + (view.getCenter());
+                    createEntity(getEntitybyCode(EntityCode(Entity_Code[currentEntity]), core, this, cellToPixels(sf::Vector2u(pos.x / CELLSIZE.x, pos.y / CELLSIZE.y))));
                 }
                     break;
                 default:
@@ -212,19 +210,23 @@ void Scene_Play::deleteEntity(Entity* entity)
     entities.erase(entity);
 }
 
-void Scene_Play::loadLevel(Level* level)
+void Scene_Play::loadLevel(const Level* level)
 {
     entities.clear();
 
     background.setTexture(&core.resources->Texture(level->getBackground()));
 
+    //CHANGE IT TO MAP OF SETS TRANSVERSAL!!!
     for(int i = 0; i < NUMCELLS.x; i++)
     {
         for(int j = 0; j < NUMCELLS.y; j++)
         {
-            if(testmap[j][i] != 0)
+            if(not level->isEmpty(Coord(i, j)))
             {
-                createEntity(getEntitybyCode(EntityCode(testmap[j][i]), core, this, cellToPixels(sf::Vector2u(i, j))));
+                for(auto it = level->get(Coord(i, j)).cbegin(); it != level->get(Coord(i, j)).cend(); it++)
+                {
+                    createEntity(getEntitybyCode(EntityCode(*it), core, this, cellToPixels(sf::Vector2u(i, j))));
+                }
             }
         }
     }
@@ -249,31 +251,11 @@ void Scene_Play::imgui()
             ImGui::Checkbox("Scene HBs", &sceneHBs);
         }
 
-        /*
-        ImGui::PushItemWidth(70.f);
-        ImGui::InputInt("X", &x, 0, 100);
-        ImGui::InputInt("Y", &y, 0, 100);
-        if(ImGui::Button("CREATE"))
+        if(ImGui::CollapsingHeader("Entities"))
         {
-            if(x >= 0 and x < NUMCELLS.x and y >= 0 and y < NUMCELLS.y)
-            {
-                EntityHolder::iterator it = addEntity(new TestPE(core, this, cellToPixels(sf::Vector2u(x, y)), "expl", b2BodyType::b2_dynamicBody, CollisionCategory(m)));
-
-                PhysicEntity* pe = dynamic_cast<PhysicEntity*>(it->second);
-                if(pe != nullptr)
-                {
-                    pe->physicize(world);
-                }
-            }
+            ImGui::Text("Cast with 'P': ");
+            ImGui::ListBox("Entities", &currentEntity, Entity_String, IM_ARRAYSIZE(Entity_String), 10);
         }
-        ImGui::BeginChild("CollCat", ImVec2(240, 140), true);
-        ImGui::Text("CollisionCategory");
-        ImGui::RadioButton("S_F", &m, CollisionCategory_STATIC_FOREGROUND);
-        ImGui::RadioButton("S_B", &m, CollisionCategory_STATIC_BACKGROUND);
-        ImGui::RadioButton("D_F", &m, CollisionCategory_DYNAMIC_FOREGROUND);
-        ImGui::RadioButton("D_B", &m, CollisionCategory_DYNAMIC_BACKGROUND);
-        ImGui::EndChild();
-        */
 
         ImGui::End();
     }

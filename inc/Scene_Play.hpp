@@ -71,15 +71,14 @@ private:
 
     //Functions
     sf::Vector2f cellToPixels(sf::Vector2u cell) const;
-    void loadLevel(Level* level);
+    void loadLevel(const Level* level);
 
     //ImGui vars
 
     bool duckHBs;
     bool sceneHBs;
 
-    int x, y;
-    int m;
+    int currentEntity;
 
     void imgui();
 };

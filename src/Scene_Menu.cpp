@@ -18,7 +18,7 @@ Scene_Menu::~Scene_Menu() {}
 void Scene_Menu::init()
 {
     title.setFont(core.resources->Font("font"));
-    title.setString("TITLE");
+    title.setString("PATOGAEM :P");
     title.setCharacterSize(90);
     title.setFillColor(sf::Color::Yellow);
     title.setPosition(86, 100);
@@ -67,7 +67,7 @@ void Scene_Menu::handleEvents(const sf::Event& event)
                             core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Play(core, "XXX")));
                             break;
                         case 1:
-                            core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Editor(core)));
+                            core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Editor(core)), false);
                             break;
                         case 2:
                             core.sceneHandler->popScene();

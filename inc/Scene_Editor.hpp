@@ -45,6 +45,7 @@ private:
     char nameBuffer[32];
     char backgroundBuffer[32];
     int currentItem;
+    int currentEntity;
 };
 
 #endif

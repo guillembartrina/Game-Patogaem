@@ -16,6 +16,7 @@ Scene_Editor::Scene_Editor(Core core)
 
     //ImGui init
     currentItem = -1;
+    currentEntity = 0;
 
     levelNames = Level::getLevelNames(levelNamesSize);
     phase = false;
@@ -55,7 +56,7 @@ void Scene_Editor::handleEvents(const sf::Event& event)
             if(phase and event.mouseButton.button == sf::Mouse::Left and not ImGui::IsMouseHoveringAnyWindow())
             {
                 sf::Vector2u pos(event.mouseButton.x / cellsize.x, event.mouseButton.y / cellsize.y);
-                level.add(Coord(pos.x, pos.y), 1);               
+                level.add(Coord(pos.x, pos.y), Entity_Code[currentEntity]);          
             }
         }
             break;
@@ -91,7 +92,7 @@ void Scene_Editor::update(const sf::Time deltatime)
                 phase = true;
             }
         }
-        ImGui::SameLine(60.f);
+        ImGui::SameLine(100.f);
         if(ImGui::Button("DELETE"))
         {
             if(currentItem != -1)
@@ -100,13 +101,18 @@ void Scene_Editor::update(const sf::Time deltatime)
                 reloadLevelNames();
             }
         }
+        ImGui::Separator();
+        if(ImGui::Button("BACK"))
+        {
+            core.sceneHandler->popScene();
+        }
     }
     else
     {
         ImGui::InputText("Name", nameBuffer, 31);
         ImGui::InputText("Background", backgroundBuffer, 31);
         ImGui::Separator();
-        ImGui::LabelText("DATA", "DATA");
+        ImGui::ListBox("Entities", &currentEntity, Entity_String, IM_ARRAYSIZE(Entity_String), 10);
         ImGui::Separator();
         if(ImGui::Button("SAVE"))
         {

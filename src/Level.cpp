@@ -39,7 +39,7 @@ void Level::add(Coord coord, short code)
 
 bool Level::isEmpty(Coord coord) const
 {
-    return (items.find(coord) != items.end());
+    return (items.find(coord) == items.end());
 }
 
 const std::set<unsigned short>& Level::get(Coord coord) const

@@ -40,35 +40,35 @@ static Entity* getEntitybyCode(EntityCode ic, Core core, Scene_Play* play, const
 {
     switch(ic)
     {
-        case 0x0000:
+        case ENTITY:
             return new Entity();
             break;
-        case 0x0001:
+        case GENERICENTITY:
             return new GenericEntity(core, play, position, "test");
             break;
-        case 0x8000:
+        case PHYSICENTITY:
             return new PhysicEntity();
             break;
-        case 0x8001:
+        case GENERICPHYSICENTITY:
             return new GenericPhysicEntity(core, play, position, "test");
             break;
         //DUCK IN SCENE_PLAY EXPLICIT
-        case 0xC008:
+        case BLOCK:
             return new Block(core, play, position, BLOCK);
             break;
-        case 0xC009:
+        case BLOCK_BLUECASTLE:
             return new Block(core, play, position, BLOCK_BLUECASTLE);
             break;
-        case 0xE000:
+        case OBJECT:
             return new Object();
             break;
-        case 0xE081:
+        case DOOR:
             return new Door(core, play, position);
             break;
-        case 0xF000:
+        case HOLDABLE:
             return new Holdable();
             break;
-        case 0xF001:
+        case CRATE:
             return new Crate(core, play, position);
             break;
         default:
@@ -102,6 +102,12 @@ static const Codepair IS_DOOR = std::make_pair(DOOR, 0xFFFF); //1110 0000 0000 0
 
 static const Codepair IS_HOLDABLE = std::make_pair(HOLDABLE, 0xF000); //1111 XXXX XXXX XXXX
 static const Codepair IS_CRATE = std::make_pair(CRATE, 0xFFFF); //1111 0000 0000 0001
+
+
+//---
+
+static const char* Entity_String[10] = {"Entity", "GenericEntity", "PhysicEntity", "GenericPhysicEntity", "Block", "Block_Bluecastle", "Object", "Door", "Holdable", "Crate" };
+static const EntityCode Entity_Code[10] = {ENTITY, GENERICENTITY, PHYSICENTITY, GENERICPHYSICENTITY, BLOCK, BLOCK_BLUECASTLE, OBJECT, DOOR, HOLDABLE, CRATE};
 
 /*
 CRATE

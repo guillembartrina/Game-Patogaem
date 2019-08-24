@@ -15,15 +15,18 @@ const std::string Block::types[2] = { "default", "bluecastle" };
 
 Block::Block(Core core, Scene_Play* play, const sf::Vector2f& position, unsigned short type) : PhysicEntity(play, position)
 {
+    /*
     int i = position.x / CELLSIZE.x;
     int j = position.y / CELLSIZE.y;
-
+    */
     char sides = 0x0F; //0000 1111
+    /*
     if(i-1 >= 0 and testmap[j][i-1] == BLOCK_BLUECASTLE) sides = sides & 0x0E; //0000 111X
     if(i+1 < NUMCELLS.x and testmap[j][i+1] == BLOCK_BLUECASTLE) sides = sides & 0x0B; //0000 1X11
     if(j-1 >= 0 and testmap[j-1][i] == BLOCK_BLUECASTLE) sides = sides & 0x07; //0000 X111
     if(j+1 < NUMCELLS.y and testmap[j+1][i] == BLOCK_BLUECASTLE) sides = sides & 0x0D; //0000 11X1
-    
+    */
+
     setSprite(core.resources->Texture(types[type - BLOCK]), sf::IntRect(CELLSIZE.x + ((sides & 0x08) >> 3) * CELLSIZE.x * 3, 0, CELLSIZE.x, CELLSIZE.y)); // change?
     
     addBody(b2BodyType::b2_staticBody);
