@@ -63,8 +63,8 @@ b2Body* PhysicEntity::physicize(b2World& world)
 
         for(unsigned int j = 0; j < bodyDefs[i]->fixtureDef.size(); j++)
         {
-            b2Fixture* tmp = bodies[i]->CreateFixture(&bodyDefs[i]->fixtureDef[j]);
-            tmp->SetUserData((void*)((bodyDefs[i]->category << 16) | j));
+            b2Fixture* tmp = bodies[i]->CreateFixture(&bodyDefs[i]->fixtureDef[j].first);
+            tmp->SetUserData((void*)((bodyDefs[i]->fixtureDef[j].second << 16) | j));
         }
 
         bodies[i]->SetUserData(this);
@@ -188,10 +188,9 @@ void PhysicEntity::addFixture(const b2Shape* shape, CollisionCategory category, 
 
     BodyDef* bodyDef = bodyDefs[numBodies-1];
 
-    if(bodyDef->fixtureDef.empty()) bodyDef->category = category;
-    bodyDef->fixtureDef.push_back(b2FixtureDef());
+    bodyDef->fixtureDef.push_back(std::make_pair(b2FixtureDef(), category));
 
-    b2FixtureDef& current = bodyDef->fixtureDef.back();
+    b2FixtureDef& current = bodyDef->fixtureDef.back().first;
 
     current.shape = shape;
     current.friction = friction;

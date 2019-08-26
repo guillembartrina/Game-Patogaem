@@ -11,7 +11,7 @@ F_SRC = $(wildcard $(D_SRC)/*.cpp)
 F_OBJ_M = $(patsubst $(D_SRC_M)/%.cpp,$(D_OBJ)/%.o,$(F_SRC_M))
 F_OBJ = $(patsubst $(D_SRC)/%.cpp,$(D_OBJ)/%.o,$(F_SRC))
 
-CXX_FLAGS = -std=c++11 -O2
+CXX_FLAGS = -std=c++17 -O2
 
 D_SFML_INC = sfml/include
 SFML_FLAGS = -Lsfml/lib -lsfml-system -lsfml-window -lsfml-graphics -lsfml-audio

@@ -50,6 +50,8 @@ class Duck : public PhysicEntity
   Holdable* holdable;
   std::set<Holdable*> holdables;
 
+  std::set<unsigned int> ignoring;
+  
   unsigned int groundings, headings;
 
   bool pL, pR, pU, pD; //pressed arrows

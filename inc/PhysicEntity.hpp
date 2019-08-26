@@ -42,7 +42,7 @@ static b2Filter getCollisionFilter(CollisionCategory cc)
         filter.maskBits = CollisionCategory_STATIC_FOREGROUND | CollisionCategory_DYNAMIC_FOREGROUND | CollisionCategory_STATIC_BACKGROUND | CollisionCategory_DYNAMIC_BACKGROUND | CollisionCategory_ALL_COLLISION;
             break;
         case CollisionCategory_DYNAMIC_BACKGROUND:
-        filter.maskBits = CollisionCategory_STATIC_FOREGROUND | CollisionCategory_STATIC_BACKGROUND | CollisionCategory_ALL_COLLISION;
+        filter.maskBits = CollisionCategory_STATIC_FOREGROUND | CollisionCategory_STATIC_BACKGROUND | CollisionCategory_DYNAMIC_BACKGROUND | CollisionCategory_ALL_COLLISION;
             break;
         case CollisionCategory_NO_COLLISION:
         filter.maskBits = 0x0000;
@@ -57,8 +57,8 @@ static b2Filter getCollisionFilter(CollisionCategory cc)
 struct BodyDef
 {
     b2BodyDef bodyDef;
-    CollisionCategory category;
-    std::vector<b2FixtureDef> fixtureDef;
+    std::vector<std::pair<b2FixtureDef, CollisionCategory>> fixtureDef;
+
 };
 
 class PhysicEntity : public Entity

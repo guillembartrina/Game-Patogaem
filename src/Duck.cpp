@@ -206,7 +206,7 @@ void Duck::handleEvents(const sf::Event& event)
                 case sf::Keyboard::E:
                 {
                     quack.play();
-                    std::cerr << getPosition().y << std::endl;
+                    //std::cerr << getPosition().y << std::endl;
                 }
                     break;
                 case sf::Keyboard::C:
@@ -329,9 +329,20 @@ void Duck::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsi
 
     if(isTarjet(collided, IS_CRATE))
     {
-
-        if(getPosition().y+64 <= collided->getPosition().y-10 and body->GetLinearVelocity().y >= -0.1f) ;
-        else contact->SetEnabled(false);
+        b2WorldManifold wm;
+        contact->GetWorldManifold(&wm);
+        if(wm.normal.y != -1 or ignoring.find(collided->getID()) != ignoring.end())
+        {
+            ignoring.insert(collided->getID());
+            //std::cerr << "(" << fixtureid << ") ADD IGNORING CRATE " << collided->getID() << std::endl;
+            contact->SetEnabled(false);
+        }
+    }
+    else if(isTarjet(collided, IS_DOOR))
+    {
+        ignoring.insert(collided->getID());
+        //std::cerr << "ADD IGNORING DOOR " << collided->getID() << std::endl;
+        contact->SetEnabled(false);
     }
 }
 
@@ -343,16 +354,29 @@ void Duck::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigne
     {
         case 1:
         {
-            if(cc & FOREGROUND_MASK and not isTarjet(collided, IS_DOOR))
+            if((cc & FOREGROUND_MASK) != 0x0000 and ignoring.find(collided->getID()) == ignoring.end())
             {
                 if(groundings == 0) go = true;
                 groundings++;
+                //std::cerr << "BOT COLLIDED " << collided->getID() << " gr:" << groundings << std::endl;
+            }
+            else
+            {
+                //if(ignoring.find(collided->getID()) != ignoring.end()) std::cerr << "BOT IGNORING " << collided->getID() << std::endl;
             }
         }
             break;
         case 2:
         {
-            if(cc & FOREGROUND_MASK and not isTarjet(collided, IS_DOOR)) headings++;
+            if((cc & FOREGROUND_MASK) != 0x0000 and ignoring.find(collided->getID()) == ignoring.end())
+            {
+                headings++;
+                //std::cerr << "TOP COLLIDED " << collided->getID() << "hd:" << headings << std::endl;
+            }
+            else
+            {
+                //if(ignoring.find(collided->getID()) != ignoring.end()) std::cerr << "TOP IGNORING " << collided->getID() << std::endl;
+            }
         }
             break;
         case 3:
@@ -376,19 +400,29 @@ void Duck::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsig
     {
         case 1:
         {
-            if(cc & FOREGROUND_MASK and not isTarjet(collided, IS_DOOR))
+            if((cc & FOREGROUND_MASK) != 0x0000 and ignoring.find(collided->getID()) == ignoring.end())
             {
                 groundings--;
                 if(groundings == 0) gz = true;
+                //std::cerr << "BOT DECOLLIDED " << collided->getID() << " gr:" << groundings << std::endl;
+            }
+            else
+            {
+                //if(ignoring.find(collided->getID()) != ignoring.end()) std::cerr << "BOT OUT IGNORING " << collided->getID() << std::endl;
             }
         }
             break;
         case 2:
         {
-            if(cc & FOREGROUND_MASK and not isTarjet(collided, IS_DOOR))
+            if((cc & FOREGROUND_MASK) != 0x0000 and ignoring.find(collided->getID()) == ignoring.end())
             {
+                //std::cerr << "TOP DECOLLIDED " << collided->getID() << " hd:" << headings << std::endl;
                 headings--;
                 if(headings == 0) hz = true;
+            }
+            else
+            {
+                //if(ignoring.find(collided->getID()) != ignoring.end()) std::cerr << "TOP OUT IGNORING " << collided->getID() << std::endl;
             }
         }
             break;
@@ -397,6 +431,12 @@ void Duck::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsig
             if(isTarjet(collided, IS_HOLDABLE))
             {
                 holdables.erase(static_cast<Holdable*>(collided));
+            }
+
+            if(ignoring.find(collided->getID()) != ignoring.end())
+            {
+                //std::cerr << "DELETE INGNORING -> " << collided->getID() << std::endl;
+                ignoring.erase(collided->getID());
             }
         }
             break;
@@ -407,6 +447,7 @@ void Duck::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsig
 
 void Duck::changeState(MovementState newstate)
 {
+    //std::cerr << " > Changed state to " << MovementState_String[newstate] << std::endl;
     switch(newstate)
     {
         case MovementState_STANDING:
