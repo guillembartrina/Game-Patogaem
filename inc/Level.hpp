@@ -8,6 +8,8 @@
 #include <set>
 #include <map>
 
+typedef std::pair<unsigned short, unsigned short> Codepair; 
+
 typedef std::pair<char, char> Coord;
 
 class Level 
@@ -24,9 +26,14 @@ class Level
   void setBackground(const std::string& background);
 
   void add(Coord coord, short code);
-  bool isEmpty(Coord coord) const;
-  const std::set<unsigned short>& get(Coord coord) const;
+  void del(Coord coord, short code);
   bool tryDel(Coord coord, short code);
+
+  bool isEmpty(Coord coord) const;
+  bool contains(Coord coord, short code);
+  bool containsTarjet(Coord coord, Codepair codepair) const;
+
+  const std::set<unsigned short>& get(Coord coord) const;
 
   void serialize() const;
   void deserialize(unsigned int index);

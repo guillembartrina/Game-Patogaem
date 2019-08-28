@@ -33,9 +33,7 @@ class Door : public Object
     static const sf::Time closeTime;
 
     int leftings, rightings;
-
-    sf::Sound open, close;
-
+    
 };
 
 #endif

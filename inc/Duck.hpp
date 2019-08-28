@@ -57,11 +57,14 @@ class Duck : public PhysicEntity
   bool pL, pR, pU, pD; //pressed arrows
   bool go, gz, hz;
 
-  sf::Sound quack;
+  bool cp;
 
   static const float dynamicsValues[5];
   static const float dynamicsCoefs[5];
   static const sf::Vector2f holdableOffset[5];
+
+  bool change;
+  MovementState ns;
 };
 
 #endif

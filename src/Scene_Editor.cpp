@@ -52,7 +52,20 @@ void Scene_Editor::handleEvents(const sf::Event& event)
         }
             break;
         case sf::Event::MouseButtonPressed:
-        {     
+        {
+            if(phase and not ImGui::IsMouseHoveringAnyWindow())
+            {
+                Coord pos(event.mouseButton.x / cellsize.x, event.mouseButton.y / cellsize.y);
+
+                if(event.mouseButton.button == sf::Mouse::Left)
+                {
+                    level.add(pos, Entity_Code[currentEntity]);
+                }
+                else if(event.mouseButton.button == sf::Mouse::Right)
+                {
+                    if(not level.isEmpty(pos)) level.del(pos, *level.get(pos).begin());
+                }
+            }
             if(phase and event.mouseButton.button == sf::Mouse::Left and not ImGui::IsMouseHoveringAnyWindow())
             {
                 sf::Vector2u pos(event.mouseButton.x / cellsize.x, event.mouseButton.y / cellsize.y);

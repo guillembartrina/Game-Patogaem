@@ -85,6 +85,11 @@ static bool isTarjet(const Entity* entity, const Codepair& codepair)
     return (((entity->getCODE() & codepair.second) ^ codepair.first) == 0x0000);
 };
 
+static bool isTarjet(unsigned short CODE, const Codepair& codepair)
+{
+    return (((CODE & codepair.second) ^ codepair.first) == 0x0000);
+};
+
 static const Codepair IS_ENTITY = std::make_pair(ENTITY, 0x0000); //XXXX XXXX XXXX XXXX
 static const Codepair IS_GENERICENTITY = std::make_pair(GENERICENTITY, 0xFFFF); //0000 0000 0000 0001
 //static const Codepair IS_OTHERENTITIES = std::make_pair(0x6000, 0xC000); //01XX XXXX XXXX XXXX

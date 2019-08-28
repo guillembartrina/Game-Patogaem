@@ -50,6 +50,8 @@ public:
     void addEntity(Entity* entity);
     void deleteEntity(Entity* entity);
 
+    const Level& getLevel() const;
+
 private:
 
     sf::View view;

@@ -4,6 +4,8 @@
 
 #include "PhysicEntity.hpp"
 
+typedef std::pair<unsigned short, unsigned short> Codepair; 
+
 class Block : public PhysicEntity
 {
     public:

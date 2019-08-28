@@ -92,7 +92,8 @@ protected:
     b2Body* body; //active body
 
     void addBody(b2BodyType type, bool fixedrotation = false);
-    void addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor = false); //needs a body
+    void addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density);
+    void addFixture_Sensor(const b2Shape* shape);
 
     void setBody(unsigned int num, bool sametransform = true);
 

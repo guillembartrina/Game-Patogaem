@@ -127,6 +127,7 @@ void Scene_Play::update(const sf::Time deltatime)
 
     world.Step(deltatime.asSeconds(), 8, 8);
 
+    //Update entities
     duck->update(deltatime);
 
     for(EntityHolder::iterator it = entities.begin(); it != entities.end(); it++)
@@ -141,7 +142,7 @@ void Scene_Play::update(const sf::Time deltatime)
         entities.erase(e);
         toDestroy.pop();
     }
-
+    
     //IMGUI
     imgui();
 }
@@ -208,6 +209,11 @@ void Scene_Play::addEntity(Entity* entity)
 void Scene_Play::deleteEntity(Entity* entity)
 {
     entities.erase(entity);
+}
+
+const Level& Scene_Play::getLevel() const
+{
+    return level;
 }
 
 void Scene_Play::loadLevel(const Level* level)

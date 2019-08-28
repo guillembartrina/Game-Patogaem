@@ -37,17 +37,9 @@ void Level::add(Coord coord, short code)
     items[coord].insert(code);
 }
 
-bool Level::isEmpty(Coord coord) const
+void Level::del(Coord coord, short code) //NOT SECURE
 {
-    return (items.find(coord) == items.end());
-}
-
-const std::set<unsigned short>& Level::get(Coord coord) const
-{
-    std::map<Coord, std::set<unsigned short>>::const_iterator it = items.find(coord);
-    
-    if(it != items.end()) return it->second;
-    else return ZEROSET_S;
+    items[coord].erase(code);
 }
 
 bool Level::tryDel(Coord coord, short code)
@@ -67,6 +59,40 @@ bool Level::tryDel(Coord coord, short code)
     }
 
     return false;
+}
+
+bool Level::isEmpty(Coord coord) const
+{
+    return (items.find(coord) == items.end());
+}
+
+bool Level::contains(Coord coord, short code)
+{
+    if(not isEmpty(coord))
+    {
+        return (items.at(coord).find(code) != items.at(coord).end());
+    }
+    return false;
+}
+
+bool Level::containsTarjet(Coord coord, Codepair codepair) const
+{
+    if(not isEmpty(coord))
+    {
+        for(std::set<unsigned short>::const_iterator it = items.at(coord).cbegin(); it != items.at(coord).cend(); it++)
+        {
+            if(isTarjet(*it, codepair)) return true;
+        }
+    }
+    return false;
+}
+
+const std::set<unsigned short>& Level::get(Coord coord) const
+{
+    std::map<Coord, std::set<unsigned short>>::const_iterator it = items.find(coord);
+    
+    if(it != items.end()) return it->second;
+    else return ZEROSET_S;
 }
 
 void Level::serialize() const

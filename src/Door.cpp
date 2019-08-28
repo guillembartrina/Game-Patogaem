@@ -10,21 +10,18 @@ Door::Door(Core core, Scene_Play* play, const sf::Vector2f& position) : Object(p
 {
     leftings = rightings = 0;
 
-    open.setBuffer(core.resources->Sound("door_open"));
-    open.setVolume(80.f);
-
-    close.setBuffer(core.resources->Sound("door_close"));
-    close.setVolume(80.f);
-
     setSprite(core.resources->Texture("door"), sf::IntRect(ZEROVECTOR_I, sf::Vector2i(CELLSIZE.x, CELLSIZE.y*2)));
 
     animate(3, sf::seconds(0.05f), false);
     stopAnimation();
 
     addBody(b2BodyType::b2_staticBody, true);
-    addFixture(createRectangle(b2Vec2(CELLSIZE.x/2, CELLSIZE.y*2)), CollisionCategory_STATIC_FOREGROUND, 0.f, 0.f, 1.f); //2
-    addFixture(createRectangle(b2Vec2(CELLSIZE.x*2, CELLSIZE.y), b2Vec2(CELLSIZE.x, CELLSIZE.y/2)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //0
-    addFixture(createRectangle(b2Vec2(CELLSIZE.x*2, CELLSIZE.y), b2Vec2(-CELLSIZE.x, CELLSIZE.y/2)), CollisionCategory_ALL_COLLISION, 0.f, 0.f, 0.f, true); //1
+    addFixture(createRectangle(b2Vec2(CELLSIZE.x/3, CELLSIZE.y*2)), CollisionCategory_STATIC_FOREGROUND, 0.f, 0.f, 1.f); //2
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x*2, CELLSIZE.y), b2Vec2(CELLSIZE.x, CELLSIZE.y/2))); //0
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x*2, CELLSIZE.y), b2Vec2(-CELLSIZE.x, CELLSIZE.y/2))); //1
+
+    addSound(core.resources->Sound("door_open"));
+    addSound(core.resources->Sound("door_close"));
 
     setCODE(DOOR);
 }
@@ -52,7 +49,7 @@ void Door::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigne
                 {
                     setSpriteRect(DoorSpriteRect_RIGHT);
                     playAnimation();
-                    open.play();
+                    playSound(0);
                 }
 
                 rightings++;
@@ -67,7 +64,7 @@ void Door::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigne
                 {
                     setSpriteRect(DoorSpriteRect_LEFT);
                     playAnimation();
-                    open.play();
+                    playSound(0);
                 }
 
                 leftings++;
@@ -116,6 +113,6 @@ void Door::onTimerTrigger()
     {
         setSpriteRect(DoorSpriteRect_CLOSED);
         stopAnimation();
-        close.play();
+        playSound(1);
     }
 }

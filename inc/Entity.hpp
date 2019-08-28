@@ -44,7 +44,7 @@ protected:
     void setSpriteRect(unsigned int index);
     sf::IntRect getSpriteRect() const;
 
-    void addSound(const sf::SoundBuffer& buffer, float volume = 0.8f);
+    void addSound(const sf::SoundBuffer& buffer, float volume = 80.f);
     void playSound(unsigned int index);
 
     Scene_Play* play;

@@ -182,7 +182,7 @@ void PhysicEntity::addBody(b2BodyType type, bool fixedrotation)
     current.fixedRotation = fixedrotation;
 }
 
-void PhysicEntity::addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density, bool sensor)
+void PhysicEntity::addFixture(const b2Shape* shape, CollisionCategory category, float friction, float restitution, float density)
 {
     assert(numBodies > 0);
 
@@ -197,7 +197,25 @@ void PhysicEntity::addFixture(const b2Shape* shape, CollisionCategory category, 
     current.restitution = restitution;
     current.density = density;
     current.filter = getCollisionFilter(category);
-    current.isSensor = sensor;
+    current.isSensor = false;
+}
+
+void PhysicEntity::addFixture_Sensor(const b2Shape* shape)
+{
+    assert(numBodies > 0);
+
+    BodyDef* bodyDef = bodyDefs[numBodies-1];
+
+    bodyDef->fixtureDef.push_back(std::make_pair(b2FixtureDef(), CollisionCategory_ALL_COLLISION));
+
+    b2FixtureDef& current = bodyDef->fixtureDef.back().first;
+
+    current.shape = shape;
+    current.friction = 0.f;
+    current.restitution = 0.f;
+    current.density = 0.f;
+    current.filter = getCollisionFilter(CollisionCategory_ALL_COLLISION);
+    current.isSensor = true;
 }
 
 void PhysicEntity::setBody(unsigned int num, bool sametransform)
