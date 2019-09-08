@@ -28,14 +28,7 @@ Door::Door(Core core, Scene_Play* play, const sf::Vector2f& position) : Object(p
 
 Door::~Door() {}
 
-void Door::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact)
-{
-    printInfo("> DOOR PRECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
-
-    if((timerActive() or rightings or leftings) and not isTarjet(collided, IS_DUCK)) contact->SetEnabled(false);
-}
-
-void Door::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
+void Door::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact)
 {
     printInfo("> DOOR COLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
 
@@ -74,6 +67,13 @@ void Door::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigne
         default:
             break;
     }
+}
+
+void Door::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact)
+{
+    printInfo("> DOOR PRECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
+
+    if((timerActive() or rightings or leftings) and not isTarjet(collided, IS_DUCK)) contact->SetEnabled(false);
 }
 
 void Door::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)

@@ -111,6 +111,12 @@ unsigned short Entity::getCODE() const
     return CODE;
 }
 
+const sf::Sprite* Entity::getSprite() const
+{
+    if(haveSprite) return &sprite;
+    return nullptr;
+}
+
 void Entity::animate(unsigned int numFrames, const sf::Time& frameTime, bool loop)
 {
     if(haveSprite)

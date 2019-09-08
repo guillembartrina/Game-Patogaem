@@ -27,7 +27,7 @@ class Scene_Play : public Scene
 {
 public:
 
-    Scene_Play(Core core, std::string levelname);
+    Scene_Play(Core core, unsigned int levelnum);
     ~Scene_Play();
 
     void init();

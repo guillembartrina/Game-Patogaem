@@ -20,8 +20,8 @@ class Door : public Object
     Door(Core core, Scene_Play* play, const sf::Vector2f& position);
     ~Door();
 
+    void onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact) override;
     void onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact) override;
-    void onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) override;
     void onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) override;
 
     virtual void action() override;

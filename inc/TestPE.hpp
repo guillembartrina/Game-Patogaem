@@ -12,7 +12,7 @@ class TestPE : public PhysicEntity
     TestPE(Core core, Scene_Play* play, const sf::Vector2f& position, std::string name, b2BodyType type, CollisionCategory category, sf::Vector2f size = CELLSIZE);
     ~TestPE();
 
-    virtual void onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) override;
+    virtual void onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact) override;
 
     private:
 

@@ -31,6 +31,8 @@ public:
 
     unsigned int getID() const;
     unsigned short getCODE() const;
+
+    const sf::Sprite* getSprite() const;
     
 protected:
 

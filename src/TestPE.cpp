@@ -11,7 +11,7 @@ TestPE::TestPE(Core core, Scene_Play* play, const sf::Vector2f& position, std::s
 
 TestPE::~TestPE() {}
 
-void TestPE::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
+void TestPE::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact)
 {
     //printInfo("COLLIDED: " << getID() << " - " << collided->getID());
 }

@@ -78,8 +78,8 @@ public:
 
     b2Body* physicize(b2World& world);
 
+    virtual void onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact);
     virtual void onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact);
-    virtual void onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc);
     virtual void onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc);
     
     //virtual void onReduceDurability();

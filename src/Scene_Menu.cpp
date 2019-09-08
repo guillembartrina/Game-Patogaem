@@ -64,7 +64,7 @@ void Scene_Menu::handleEvents(const sf::Event& event)
                     switch(currentOption)
                     {
                         case 0:
-                            core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Play(core, "XXX")));
+                            core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Play(core, 0)), false);
                             break;
                         case 1:
                             core.sceneHandler->addScene(std::unique_ptr<Scene>(new Scene_Editor(core)), false);

@@ -120,7 +120,7 @@ void PhysicEntity::update(const sf::Time deltatime)
 
 void PhysicEntity::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact) {}
 
-void PhysicEntity::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) {}
+void PhysicEntity::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact) {}
 
 void PhysicEntity::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc) {}
 

@@ -14,7 +14,7 @@ bool EntityComp::operator()(const Entity* e1, const Entity* e2) const
     return (*e1 < *e2);
 }
 
-Scene_Play::Scene_Play(Core core, std::string levelname)
+Scene_Play::Scene_Play(Core core, unsigned int levelnum)
 : Scene(core)
 , world(b2Vec2(0.f, 40.f))
 {
@@ -26,6 +26,8 @@ Scene_Play::Scene_Play(Core core, std::string levelname)
 
     duck = new Duck(core, this, sf::Vector2f(300, 900));
     static_cast<PhysicEntity*>(duck)->physicize(world);
+
+    level.deserialize(levelnum);
 
     //IMGUI
     duckHBs = false;
@@ -41,6 +43,8 @@ Scene_Play::~Scene_Play()
     {
         delete *it;
     }
+
+    core.window->setView(core.window->getDefaultView());
 }
 
 void Scene_Play::init()
@@ -48,8 +52,6 @@ void Scene_Play::init()
     view.setSize(sf::Vector2f(core.window->getSize()));
     view.setCenter(sf::Vector2f(CELLSIZE.x * NUMCELLS.x, CELLSIZE.y * NUMCELLS.y) * 0.5f);
     core.window->setView(view);
-
-    level.deserialize(0);
 
     loadLevel(&level);
 }
@@ -65,26 +67,6 @@ void Scene_Play::handleEvents(const sf::Event& event)
                 case sf::Keyboard::Escape:
                 {
                     core.sceneHandler->popScene();
-                }
-                    break;
-                case sf::Keyboard::W:
-                {
-                    view.move(sf::Vector2f(0.f, -32.f));
-                }
-                    break;
-                case sf::Keyboard::S:
-                {
-                    view.move(sf::Vector2f(0.f, 32.f));
-                }
-                    break;
-                case sf::Keyboard::A:
-                {
-                    view.move(sf::Vector2f(-32.f, 0.f));
-                }
-                    break;
-                case sf::Keyboard::D:
-                {
-                    view.move(sf::Vector2f(32.f, 0.f));
                 }
                     break;
                 case sf::Keyboard::P:
@@ -106,7 +88,7 @@ void Scene_Play::handleEvents(const sf::Event& event)
             break;
     }
 
-    static_cast<Duck*>(duck)->handleEvents(event);
+    if(static_cast<Duck*>(duck)->isAlive()) static_cast<Duck*>(duck)->handleEvents(event);
 }
 
 void Scene_Play::update(const sf::Time deltatime)
@@ -159,6 +141,14 @@ void Scene_Play::draw(sf::RenderWindow& window) const
             std::vector<sf::RectangleShape> hbs;
             static_cast<PhysicEntity*>(*it)->getHBs(hbs);
             for(unsigned int i = 0; i < hbs.size(); i++) window.draw(hbs[i]);
+
+            /* MILLORAR */
+            sf::Text text;
+            text.setFont(core.resources->Font("font"));
+            text.setCharacterSize(18);
+            text.setString(std::to_string((*it)->getID()));
+            text.setPosition((*it)->getPosition() - sf::Vector2f(20, 0));
+            window.draw(text);
         }
     }
 
@@ -249,6 +239,12 @@ void Scene_Play::imgui()
         ImGui::Text("State: ");
         ImGui::SameLine();
         ImGui::Text(MovementState_String[static_cast<Duck*>(duck)->getState()].c_str());
+        ImGui::Text("Hd: ");
+        ImGui::SameLine();
+        ImGui::Text(std::to_string(static_cast<Duck*>(duck)->getHeadings()).c_str());
+        ImGui::Text("Gr: ");
+        ImGui::SameLine();
+        ImGui::Text(std::to_string(static_cast<Duck*>(duck)->getGroundings()).c_str());
         ImGui::Separator();
 
         if(ImGui::CollapsingHeader("HBs"))

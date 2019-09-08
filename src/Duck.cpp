@@ -21,9 +21,11 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
     groundings = headings = 0;
 
     pL = pR = pU = pD = false;
-    go = gz = hz = false;
 
-    cp = false;
+    changecicle = -1;
+
+    tk = false;
+    alive = true;
 
     //Image
     setSprite(core.resources->Texture("duck"), sf::IntRect(0, 0, CELLSIZE.x, CELLSIZE.y*2));
@@ -35,26 +37,31 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
     addBody(b2BodyType::b2_dynamicBody, true);
 
     //-->0
-    addFixture(createRectangle(b2Vec2(CELLSIZE.x-4, (CELLSIZE.y*2)-4)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
-    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 52))); //1
-    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, -52))); //2
-    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-4, (CELLSIZE.y*2)-4))); //3
+    addFixture(createRectangle(b2Vec2(CELLSIZE.x-2, (CELLSIZE.y*2)-2)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 53))); //1
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, -53))); //2
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-2, (CELLSIZE.y*2)-2))); //3
 
     //-->1
     addBody(b2BodyType::b2_dynamicBody, true);
 
-    addFixture(createRectangle(b2Vec2(CELLSIZE.x-4, 88-4), b2Vec2(0, 20)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
-    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 52))); //1
-    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, -12))); //2
-    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-4, 88-4), b2Vec2(0, 20))); //3
+    addFixture(createRectangle(b2Vec2(CELLSIZE.x-2, 88-2), b2Vec2(0, 20)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 53))); //1
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, -13))); //2
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-2, 88-2), b2Vec2(0, 20))); //3
 
     //-->2
     addBody(b2BodyType::b2_dynamicBody, true);
 
-    addFixture(createRectangle(b2Vec2((CELLSIZE.x*2)-4, CELLSIZE.y-4), b2Vec2(0, 32)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0
-    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 52))); //1
-    addFixture_Sensor(createRectangle(b2Vec2((CELLSIZE.x*2)-62, 20), b2Vec2(0, 12))); //2
-    addFixture_Sensor(createRectangle(b2Vec2((CELLSIZE.x*2)-4, CELLSIZE.y-4), b2Vec2(0, 32))); //3
+    addFixture(createRectangle(b2Vec2((CELLSIZE.x*2)-4, CELLSIZE.y-2), b2Vec2(0, 32)), CollisionCategory_DUCK, 0.f, 0.f, 1.f); //0 //change width??
+    addFixture_Sensor(createRectangle(b2Vec2(CELLSIZE.x-12, 20), b2Vec2(0, 53))); //1
+    addFixture_Sensor(createRectangle(b2Vec2((CELLSIZE.x*2)-62, 20), b2Vec2(0, 11))); //2
+    addFixture_Sensor(createRectangle(b2Vec2((CELLSIZE.x*2)-4, CELLSIZE.y-2), b2Vec2(0, 32))); //3
+
+    //-->3
+    addBody(b2BodyType::b2_dynamicBody, true);
+
+    addFixture(createRectangle(b2Vec2(CELLSIZE.x-2, CELLSIZE.y-2), b2Vec2(0, 32)), CollisionCategory_DYNAMIC_BACKGROUND, 0.f, 0.f, 1.f); //0
 
     //---
 
@@ -65,7 +72,7 @@ Duck::Duck(Core core, Scene_Play* play, const sf::Vector2f& position) : PhysicEn
 
     setCODE(DUCK);
 
-    change = false;
+    change = false;    
 }
 
 Duck::~Duck() {}
@@ -85,13 +92,13 @@ void Duck::handleEvents(const sf::Event& event)
                         body->ApplyLinearImpulse(b2Vec2(0, -32), body->GetWorldCenter(), true);
                         //changeState(MovementState_JUMPING);
                         change = true;
-                        ns = MovementState_JUMPING;
+                        newstate = MovementState_JUMPING;
                     }
                     else if(state == MovementState_JUMPING)
                     {
                         //changeState(MovementState_FLYING);
                         change = true;
-                        ns = MovementState_FLYING;
+                        newstate = MovementState_FLYING;
                     }
                     pU = true;
                 }
@@ -106,14 +113,13 @@ void Duck::handleEvents(const sf::Event& event)
                             {
                                 //changeState(MovementState_FLOORING);
                                 change = true;
-                                ns = MovementState_FLOORING;
-                                body->ApplyLinearImpulse(b2Vec2(dynamicsValues[state] * std::pow(-1, (int)side) * body->GetMass(), 0), body->GetWorldCenter(), true); //PULSE, change?
+                                newstate = MovementState_FLOORING;
                             }
                             else
                             {
                                 //changeState(MovementState_DOWNING);
                                 change = true;
-                                ns = MovementState_DOWNING;
+                                newstate = MovementState_DOWNING;
                             }
                         }
                             break;
@@ -162,7 +168,7 @@ void Duck::handleEvents(const sf::Event& event)
                 case sf::Keyboard::E:
                 {
                     playSound(0);
-                    std::cerr << groundings << " " << headings << std::endl;
+                    std::cerr << "------------" << std::endl;
                 }
                     break;
                 case sf::Keyboard::C:
@@ -211,7 +217,7 @@ void Duck::handleEvents(const sf::Event& event)
                     {
                         //changeState(MovementState_JUMPING);
                         change = true;
-                        ns = MovementState_JUMPING;
+                        newstate = MovementState_JUMPING;
                     }
                     else if(state == MovementState_JUMPING)
                     {
@@ -228,7 +234,7 @@ void Duck::handleEvents(const sf::Event& event)
                         {
                             //changeState(MovementState_STANDING);
                             change = true;
-                            ns = MovementState_STANDING;
+                            newstate = MovementState_STANDING;
                         }
                             break;
                         case MovementState_FLOORING:
@@ -237,7 +243,7 @@ void Duck::handleEvents(const sf::Event& event)
                             {
                                 //changeState(MovementState_STANDING);
                                 change = true;
-                                ns = MovementState_STANDING;
+                                newstate = MovementState_STANDING;
                                 if(pL and not pR) side = MovementSide_LEFT;
                                 else if(pR and not pL) side = MovementSide_RIGHT;
                             }
@@ -283,35 +289,27 @@ void Duck::update(const sf::Time deltatime)
 {
     PhysicEntity::update(deltatime);
 
-    cp = false;
-
-    if(change)
+    if(changecicle >= 0) changecicle++;
+    
+    if(changecicle == 2)
     {
-        changeState(ns);
-    }
-    change = false;
+        ignoring = ignoringNew;
+        ignoringNew.clear();
 
-    if(go)
-    {
-        if(state == MovementState_FLYING or state == MovementState_JUMPING)
-        {
-            if(pD) changeState(MovementState_DOWNING);
-            else changeState(MovementState_STANDING);
-        }
+        changecicle = -1;
     }
-    go = false;
 
-    if(gz)
+    while(not toDelete.empty())
     {
-        if(state == MovementState_STANDING) changeState(MovementState_JUMPING);
+        ignoring.erase(toDelete.front());
+        toDelete.pop();
     }
-    gz = false;
 
-    if(hz)
+    if(tk)
     {
-        if(state == MovementState_FLOORING and not pD) changeState(MovementState_STANDING);
+        kill();
+        tk = false;
     }
-    hz = false;
 
     bool ableToMove = (state != MovementState_FLOORING and state != MovementState_DOWNING);
     if(ableToMove and (pL xor pR))
@@ -342,6 +340,13 @@ void Duck::update(const sf::Time deltatime)
     }
 
     if(holdable != nullptr) holdable->setPosition(getPosition() + sf::Vector2f(holdableOffset[state].x * std::pow(-1.f, (int)side), holdableOffset[state].y));
+
+    if(change)
+    {
+        changeState(newstate);
+    
+        change = false;
+    }
 }
 
 void Duck::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -350,64 +355,56 @@ void Duck::draw(sf::RenderTarget& target, sf::RenderStates states) const
     if(holdable != nullptr) target.draw(*holdable, states);
 }
 
-void Duck::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact)
-{
-    printInfo("> DUCK PRECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
-
-    if(isTarjet(collided, IS_CRATE))
-    {
-        b2WorldManifold wm;
-        contact->GetWorldManifold(&wm);
-        if(wm.normal.y != -1 or ignoring.find(collided->getID()) != ignoring.end())
-        {
-            //if(ignoring.find(collided->getID()) == ignoring.end()) std::cerr << "(" << fixtureid << ") ADD IGNORING CRATE " << collided->getID() << std::endl;
-            ignoring.insert(collided->getID());
-            contact->SetEnabled(false);
-        }
-    }
-    else if(isTarjet(collided, IS_DOOR))
-    {
-        ignoring.insert(collided->getID());
-        //std::cerr << "ADD IGNORING DOOR " << collided->getID() << std::endl;
-        contact->SetEnabled(false);
-    }
-}
-
-void Duck::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
+void Duck::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact)
 {
     printInfo("> DUCK COLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
 
     switch(fixtureid)
     {
+        case 0:
+        {
+            if(isTarjet(collided, IS_CRATE))
+            {
+                b2WorldManifold wm;
+                contact->GetWorldManifold(&wm);
+
+                if(wm.normal.y != 1)
+                {
+                    ignoring.insert(collided->getID());
+                }
+            }
+        }
+            break;
         case 1:
         {
-            if((cc & FOREGROUND_MASK) != 0x0000 and ignoring.find(collided->getID()) == ignoring.end())
+            if(cc & FOREGROUND_MASK)
             {
-                if(groundings == 0) go = true;
-                groundings++;
-                //std::cerr << "BOT COLLIDED " << collided->getID() << " - GrC: " << groundings << std::endl;
+                if(ignoring.find(collided->getID()) == ignoring.end())
+                {
+                    if(groundings == 0)
+                    {
+                        if(state == MovementState_FLYING or state == MovementState_JUMPING)
+                        {
+                            change = true;
+                            if(pD) newstate = MovementState_DOWNING;
+                            else newstate = MovementState_STANDING;
+                        }
+                    }
+
+                    groundings++;
+                }
             }
-            /*
-            else
-            {
-                if(ignoring.find(collided->getID()) != ignoring.end()) std::cerr << "BOT IGNORING " << collided->getID() << std::endl;
-            }
-            */
         }
             break;
         case 2:
         {
-            if((cc & FOREGROUND_MASK) != 0x0000 and ignoring.find(collided->getID()) == ignoring.end())
+            if(cc & FOREGROUND_MASK)
             {
-                headings++;
-                //std::cerr << "TOP COLLIDED " << collided->getID() << " - HdC: " << headings << std::endl;
+                if(ignoring.find(collided->getID()) == ignoring.end())
+                {
+                    headings++;
+                }
             }
-            /*
-            else
-            {
-                if(ignoring.find(collided->getID()) != ignoring.end()) std::cerr << "TOP IGNORING " << collided->getID() << std::endl;
-            }
-            */
         }
             break;
         case 3:
@@ -417,68 +414,11 @@ void Duck::onCollision(unsigned short fixtureid, PhysicEntity* collided, unsigne
                 holdables.insert(static_cast<Holdable*>(collided));
             }
 
-            if(isTarjet(collided, IS_CRATE) and getPosition().y+64 >= collided->getPosition().y)
+            if(changecicle == 1)
             {
-                ignoring.insert(collided->getID());
-            }
-        }
-            break;
-        default:
-            break;
-    }
-}
-
-void Duck::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
-{
-    printInfo("> DUCK DECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
-
-    switch(fixtureid)
-    {
-        case 1:
-        {
-            if((cc & FOREGROUND_MASK) != 0x0000 and ignoring.find(collided->getID()) == ignoring.end())
-            {
-                groundings--;
-                if(groundings == 0) gz = true;
-                //std::cerr << "BOT DECOLLIDED " << collided->getID() << " - GrC: " << groundings << std::endl;
-            }
-            /*
-            else
-            {
-                if(ignoring.find(collided->getID()) != ignoring.end()) std::cerr << "BOT OUT IGNORING " << collided->getID() << std::endl;
-            }
-            */
-        }
-            break;
-        case 2:
-        {
-            if((cc & FOREGROUND_MASK) != 0x0000 and ignoring.find(collided->getID()) == ignoring.end())
-            {
-                headings--;
-                if(headings == 0) hz = true;
-                //std::cerr << "TOP DECOLLIDED " << collided->getID() << " - HdC: " << headings << std::endl;
-            }
-            /*
-            else
-            {
-                if(ignoring.find(collided->getID()) != ignoring.end()) std::cerr << "TOP OUT IGNORING " << collided->getID() << std::endl;
-            }
-            */
-        }
-            break;
-        case 3:
-        {
-            if(isTarjet(collided, IS_HOLDABLE))
-            {
-                holdables.erase(static_cast<Holdable*>(collided));
-            }
-
-            if(ignoring.find(collided->getID()) != ignoring.end())
-            {   
-                if(cp == false)
+                if(ignoring.find(collided->getID()) != ignoring.end())
                 {
-                    //std::cerr << "DELETE INGNORING -> " << collided->getID() << std::endl;
-                    ignoring.erase(collided->getID());
+                    ignoringNew.insert(collided->getID());
                 }
             }
         }
@@ -488,9 +428,117 @@ void Duck::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsig
     }
 }
 
+void Duck::onPrecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc, b2Contact* contact)
+{
+    printInfo("> DUCK PRECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
+
+    if(isTarjet(collided, IS_CRATE))
+    {
+        if(ignoring.find(collided->getID()) != ignoring.end()) contact->SetEnabled(false);
+    }
+    else if(isTarjet(collided, IS_DOOR))
+    {
+        contact->SetEnabled(false);
+    }
+}
+
+void Duck::onDecollision(unsigned short fixtureid, PhysicEntity* collided, unsigned short cc)
+{
+    printInfo("> DUCK DECOLLISION --> FIXTURE(" << fixtureid << ") || " << collided->getID());
+
+    switch(fixtureid)
+    {
+        case 0: //ORDER OF DECOLLISION??
+        {
+        }
+            break;
+        case 1:
+        {
+            if(cc & FOREGROUND_MASK)
+            {
+                if(ignoring.find(collided->getID()) == ignoring.end())
+                {
+                    groundings--;
+                    if(groundings == 0)
+                    {
+                        if(state == MovementState_STANDING)
+                        {
+                            change = true; 
+                            newstate = MovementState_JUMPING;
+                        }
+                    }
+                }
+            }
+        }
+            break;
+        case 2:
+        {
+            if(cc & FOREGROUND_MASK)
+            {
+                if(ignoring.find(collided->getID()) == ignoring.end())
+                {
+                    headings--;
+                    if(headings == 0)
+                    {
+                        if(state == MovementState_FLOORING and not pD)
+                        {
+                            change = true;
+                            newstate = MovementState_STANDING;
+                        }
+                    }
+                }
+            }
+        }
+            break;
+        case 3:
+        {
+            if(isTarjet(collided, IS_HOLDABLE))
+            {
+                holdables.erase(static_cast<Holdable*>(collided));
+            }
+
+            if(changecicle == -1)
+            {
+                if(ignoring.find(collided->getID()) != ignoring.end()) toDelete.push(collided->getID());
+            }
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+void Duck::kill()
+{
+    setBody(3);
+    setSpriteRect(6+side);
+
+    alive = false;
+}
+
+bool Duck::isAlive() const
+{
+    return alive;
+}
+
+MovementState Duck::getState() const
+{
+    return state;
+}
+
+unsigned int Duck::getHeadings() const
+{
+    return headings;
+}
+
+unsigned int Duck::getGroundings() const
+{
+    return groundings;
+}
+
 void Duck::changeState(MovementState newstate)
 {
-    //std::cerr << " > Changed state to " << MovementState_String[newstate] << std::endl;
+    printInfo(" > Changed state to " << MovementState_String[newstate] << std::endl);
     switch(newstate)
     {
         case MovementState_STANDING:
@@ -499,9 +547,9 @@ void Duck::changeState(MovementState newstate)
         {
             if(state == MovementState_DOWNING or state == MovementState_FLOORING)
             {
+                changecicle = 0;
                 setBody(0);
                 setSpriteRect(0+side);
-                cp = true;
             }
         }
             break;
@@ -509,9 +557,9 @@ void Duck::changeState(MovementState newstate)
         {
             if(state != MovementState_DOWNING)
             {
+                changecicle = 0;
                 setBody(1);
                 setSpriteRect(2+side);
-                cp = true;
             }
         }
             break;
@@ -519,18 +567,14 @@ void Duck::changeState(MovementState newstate)
         {
             if(state != MovementState_FLOORING)
             {
+                changecicle = 0;
                 setBody(2);
                 setSpriteRect(4+side);
-                cp = true;
+                body->ApplyLinearImpulse(b2Vec2(dynamicsValues[state] * std::pow(-1, (int)side) * body->GetMass(), 0), body->GetWorldCenter(), true); //PULSE, change?
             }
         }
             break;
     };
 
     state = newstate;
-}
-
-MovementState Duck::getState() const
-{
-    return state;
 }

@@ -138,6 +138,7 @@ void Scene_Editor::update(const sf::Time deltatime)
         if(ImGui::Button("BACK"))
         {
             level = Level();
+            currentItem = 0;
             reloadLevelNames();
 
             phase = false;
@@ -153,28 +154,37 @@ void Scene_Editor::draw(sf::RenderWindow& window) const
     {
         sf::RectangleShape shape;
         shape.setSize(cellsize);
-        shape.setFillColor(sf::Color::Black);
         shape.setOutlineColor(sf::Color::White);
         shape.setOutlineThickness(-0.8f);
-
-        sf::Text text;
-        text.setFont(core.resources->Font("font"));
-        text.setCharacterSize(10.f);
 
         for(int i = 0; i < NUMCELLS.x; i++)
         {
             for(int j = 0; j < NUMCELLS.y; j++)
             {
-                //temp
-                if(not level.get(Coord(i, j)).empty()) shape.setFillColor(sf::Color::Blue);
-                else shape.setFillColor(sf::Color::Black);
-
-                text.setString(std::to_string(*level.get(Coord(i, j)).begin()));
+                if(not level.isEmpty(Coord(i, j)))
+                {
+                    shape.setFillColor(sf::Color::White);
+                    Entity* e = getEntitybyCode(EntityCode(*level.get(Coord(i, j)).begin()), core, nullptr, ZEROVECTOR_F);
+                    const sf::Sprite* s = e->getSprite();
+                    if(s != nullptr)
+                    {
+                        shape.setTexture(s->getTexture());
+                        shape.setTextureRect(s->getTextureRect());
+                    }
+                    else
+                    {
+                        shape.setTexture(&core.resources->Texture("default"), true);
+                    }
+                    delete e;
+                }
+                else
+                {
+                    shape.setFillColor(sf::Color::Black);
+                    shape.setTexture(nullptr);
+                }
 
                 shape.setPosition(sf::Vector2f(i*cellsize.x, j*cellsize.y));
-                text.setPosition(sf::Vector2f(i*cellsize.x + cellsize.x / 8.f, j*cellsize.y + cellsize.y / 3.f));
                 window.draw(shape);
-                if(not level.get(Coord(i, j)).empty()) window.draw(text);
             }
         }
     }

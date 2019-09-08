@@ -40,6 +40,8 @@ void Level::add(Coord coord, short code)
 void Level::del(Coord coord, short code) //NOT SECURE
 {
     items[coord].erase(code);
+
+    if(items[coord].empty()) items.erase(items.find(coord));
 }
 
 bool Level::tryDel(Coord coord, short code)
@@ -52,7 +54,8 @@ bool Level::tryDel(Coord coord, short code)
             if(*it2 == code)
             {
                 it1->second.erase(it2);
-                
+
+                if(it1->second.empty()) items.erase(it1);                
                 return true;
             }
         }
